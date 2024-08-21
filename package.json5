@@ -1,0 +1,48 @@
+{
+  // 爱死 pnpm 惹，支持 JSON5 真是大好评！
+  name: 'luolita',
+  version: '0.1.2',
+  // TODO: 目前 COFFEE 不支持 ESM 模块化，55555
+  type: 'commonjs',
+  main: 'luolita.mjs',
+  bin: 'luolita.coffee',
+  // 这是一个类似 Vue 的单文件组件生成器，将 ".luoli" 文件解析为 3 种语法糖：coffeescript、pug、stylus。
+  description: 'A like-vue Single-File Components generator that parses HTML+CSS+JS ".luoli" into 3-Syntactic sugar: coffeescript, pug, and stylus. ',
+  scripts: {
+    // 把 README.md 编译为 luolita.mjs，适配 ESM 模式
+    // pnpm start => alias: pnpm run start，顺便试一下config 是真的难用 确信
+    start: 'ver && echo %npm_package_config_Windows% || echo $npm_package_config_Posix',
+    test: './luolita.coffee',
+    prebuild: 'coffee -bl -o temp/index.mjs -c README.md',
+    // 释放 package.json5，还原配置文件数据，编译 ".litcoffee"
+    preinstall: 'coffee --bare --no-header --literate --output luolita.mjs --compile README.md \
+      && mv package.bemly.json5 package.json5',
+    // pnpm 发布的时候强制无法上传 package.json5，改成 package.bemly.json 规避
+    prepack: 'cp package.json5 package.bemly.json5',
+  },
+  keywords: [
+    'coffeescript',
+    'generation',
+    'parse',
+    'tools',
+    'pug',
+    'jade',
+    'stylus'
+  ],
+  author: 'Bemly_ <bemly_@petalmail.com> (https://bemly.moe)',
+  contributors: [
+    'thank you for everyone!'
+  ],
+  license: 'WTFPL',
+  dependencies: {
+    coffeescript: '^2.7.0',
+    minimist: '^1.2.8',
+    pug: '^3.0.3',
+    stylus: '^0.63.0'
+  },
+  config: {
+    drink: 'coffee --bare --no-header --literate --output luolita.mjs --compile README.md',
+    Windows: '[luolita] detected program work on Windows',
+    Posix: '[luolita] detected program work on Posix',
+  }
+}
