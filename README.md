@@ -27,11 +27,65 @@ This is ESM module support.
 ```coffeescript
 
   import * as cfs from "coffeescript"
+  import * as pug from "pug"
+  import sty from "stylus"
+  
 
-  console.log "[luolita] use ES Modules loader."
-  console.log "[luolita] #{ cfs.VERSION }"
+  PATH = "temp/test.luoli"
+  NAME = "[luolita]"
+  ENCODING = "utf-8"
+  COFFEE_OPTIONS =
+    bare: true,
+    header: false,
+    sourceMap: true,
+    inlineMap: true,
 
-  export default "????"
+  console.log "#{ NAME } use ES Modules loader."
+  console.log "#{ NAME } CoffeeScript ver: #{ cfs.VERSION }"
+
+  import { readFileSync, createReadStream, writeFileSync } from "fs"
+  import JSON from 'json5'
+  import readline from "readline"
+  
+  DEBUG = true
+
+  { config: CONFIG } = JSON.parse readFileSync "package.json5", "utf-8"
+  
+  file = readline.createInterface 
+    input: createReadStream PATH, encoding: ENCODING
+  if DEBUG then console.log "#{ NAME } Reading file: #{ PATH }"
+  
+  # 0: coffeescript, 1: pug, 2: stylus
+
+  file_segments = {}
+  file_segment_status = ""
+  output_segments = {}
+  sfc_var_bridge = ->
+  output2file = (json) -> 
+    writeFileSync "temp/test.css", json.style
+    writeFileSync "temp/test.js", json.coffee.js
+    writeFileSync "temp/test.html", json.template
+    
+  file.on "line", (line) -> 
+    if DEBUG then console.log "#{ NAME } #{ PATH }> #{ line }"
+    switch line.trimEnd()
+      when "coffee:" then file_segment_status = "coffee"
+      when "template:" then file_segment_status = "template"
+      when "style:" then file_segment_status = "style"
+      else
+        file_segments[file_segment_status] ?= ""
+        file_segments[file_segment_status] += line + '\n'
+  
+  file.on "close", ->
+    if DEBUG then console.log "#{ NAME } Close file: #{ PATH }"
+    sfc_var_bridge()
+    output_segments.coffee = cfs.compile file_segments.coffee, COFFEE_OPTIONS
+    output_segments.template = pug.render file_segments.template
+    output_segments.style = await sty file_segments.style
+      .render()
+    if DEBUG then console.log output_segments
+    output2file output_segments
+    export default output_segments
 
 ```
 
@@ -44,6 +98,9 @@ This is ESM module support.
 
 ### [0.1.-2] - 2024-08-22
 - 完成所有打包工作，测试导出是否正常 Completed all packaging, test export work
+
+### [0.1.3] - 2024-08-22
+- 简单分割文件为三段类型分开解释 Simple split files into three types to explain
 
 ## 许可证 License
 

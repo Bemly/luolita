@@ -1,7 +1,7 @@
 {
   // 爱死 pnpm 惹，支持 JSON5 真是大好评！
   name: 'luolita',
-  version: '0.1.2',
+  version: '0.1.3',
   // TODO: 目前 COFFEE 不支持 ESM 模块化，55555
   type: 'commonjs',
   main: 'luolita.mjs',
@@ -14,9 +14,10 @@
     start: 'ver && echo %npm_package_config_Windows% || echo $npm_package_config_Posix',
     test: './luolita.coffee',
     prebuild: 'coffee -bl -o temp/index.mjs -c README.md',
+    build: 'coffee -bl -o luolita.mjs -c README.md',
+    readme: 'coffee -bl -o luolita.mjs -c README.md && node luolita.mjs',
     // 释放 package.json5，还原配置文件数据，编译 ".litcoffee"
-    preinstall: 'coffee --bare --no-header --literate --output luolita.mjs --compile README.md \
-      && mv package.bemly.json5 package.json5',
+    preinstall: 'coffee --bare --no-header --literate --output luolita.mjs --compile README.md       && mv package.bemly.json5 package.json5',
     // pnpm 发布的时候强制无法上传 package.json5，改成 package.bemly.json 规避
     prepack: 'cp package.json5 package.bemly.json5',
   },
@@ -27,22 +28,23 @@
     'tools',
     'pug',
     'jade',
-    'stylus'
+    'stylus',
   ],
   author: 'Bemly_ <bemly_@petalmail.com> (https://bemly.moe)',
   contributors: [
-    'thank you for everyone!'
+    'thank you for everyone!',
   ],
   license: 'WTFPL',
   dependencies: {
     coffeescript: '^2.7.0',
+    json5: '^2.2.3',
     minimist: '^1.2.8',
     pug: '^3.0.3',
-    stylus: '^0.63.0'
+    stylus: '^0.63.0',
   },
   config: {
     drink: 'coffee --bare --no-header --literate --output luolita.mjs --compile README.md',
     Windows: '[luolita] detected program work on Windows',
     Posix: '[luolita] detected program work on Posix',
-  }
+  },
 }
