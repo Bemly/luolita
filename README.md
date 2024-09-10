@@ -105,6 +105,7 @@ This is ESM module support.
 ## 许可证 License
 
 WTFPL - Do What The F*ck You Want To Public License
+![github license](https://img.shields.io/github/license/Bemly/luolita)
 
 [
     ![WTFPL](http://www.wtfpl.net/wp-content/uploads/2012/12/wtfpl-badge-1.png)
