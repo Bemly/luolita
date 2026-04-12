@@ -50,35 +50,42 @@ do ->
   # --- Extract variable assignments from coffee source ---
   sfcVarBridge = (coffeeSrc) ->
     vars = {}
-    lines = coffeeSrc.split '\n'
-    i = 0
-    while i < lines.length
-      line = lines[i]
-      # Skip triple-quoted strings (''' or """)
-      if /'''|"""/.test line
-        i++
-        while i < lines.length
-          break if /'''|"""/.test lines[i]
-          i++
-        i++
+    inTripleQuote = false
+    tripleQuoteChar = null
+    for line in coffeeSrc.split '\n'
+      # Track triple-quote blocks
+      if inTripleQuote
+        if line.includes tripleQuoteChar
+          inTripleQuote = false
+          tripleQuoteChar = null
         continue
+      if /'''|"""/.test line
+        inTripleQuote = true
+        tripleQuoteChar = if line.includes "'''" then "'''" else '"""'
+        # If opening and closing triple-quote on same line, toggle off immediately
+        parts = line.split tripleQuoteChar
+        if parts.length >= 3
+          inTripleQuote = false
+          tripleQuoteChar = null
+        continue
+
       match = line.match /^\s*([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=\s*(.+)$/
       if match
         raw = match[2].trim()
-        # If it's a quoted string literal, extract the inner value directly
+        # Skip if value starts with triple quotes
+        if /^'''|^"""/.test raw
+          inTripleQuote = true
+          tripleQuoteChar = if raw.startsWith "'''" then "'''" else '"""'
+          continue
+        # Quoted string literals — extract directly
         if /^".*"$/.test raw
           vars[match[1]] = raw.slice 1, -1
         else if /^'.*'$/.test raw
           vars[match[1]] = raw.slice 1, -1
         else
-          # For bare identifiers or other expressions, try to eval the compiled JS
-          try
-            js = cfs.compile raw, bare: true, header: false
-            vars[match[1]] = (new Function "return (#{ js })")()
-          catch e
-            # Bare identifier that can't be resolved — treat as plain string
-            vars[match[1]] = raw
-      i++
+          # Bare identifier or expression — treat as plain string to avoid
+          # CoffeeScript compiling `foo` into `(typeof CoffeeScript !== ...)`
+          vars[match[1]] = raw
     vars
 
   # --- Compile stylus (sync, returns CSS string) ---
