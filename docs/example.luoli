@@ -53,7 +53,7 @@ template:
     section.hero
       h1= title
       p.tagline= '类似 Vue 的单文件组件生成器，零运行时依赖'
-      p.desc= '将 .luoli 文件解析为三种语法糖：CoffeeScript、Pug 和 Stylus，分别编译为标准的 JavaScript、HTML 和 CSS。纯浏览器端编译，一个 &lt;script&gt; 标签即可使用，缩进自动检测（2/4 空格或 Tab 均可）。'
+      p.desc= '将 .luoli 文件解析为三种语法糖：CoffeeScript、Pug 和 Stylus，分别编译为标准的 JavaScript、HTML 和 CSS。纯浏览器端编译，一个 <link> 即可轻松使用，自动缩进检测'
       .hero-actions
         .btn.btn-brand(onclick="revealDocs()") 快速开始
         a.btn.btn-alt(href=githubUrl, target="_blank", rel="noopener") GitHub 仓库
@@ -72,16 +72,15 @@ template:
         h3= f3Title
         p= 'Stylus 编译为 CSS，支持嵌套、变量、混合等高级特性。'
 
-    section.docs(id="docs")
+    section.docs(id="docs").collapsible
       .docs-section
         h2 什么是 Luolita？
-        .docs-content.collapsible
-          p Luolita（萝莉塔）是一个类似 Vue 的单文件组件生成器。它将 <code>.luoli</code> 文件中的三种语法分别编译为标准的 JavaScript、HTML 和 CSS：
-          ul
-            li <code>coffee:</code> &mdash; CoffeeScript &rarr; JavaScript（含 source map）
-            li <code>template:</code> &mdash; Pug 模板 &rarr; HTML（变量自动桥接）
-            li <code>style:</code> &mdash; Stylus &rarr; CSS
-          p 支持 Node.js 命令行和浏览器两种运行方式。缩进自动检测，2 空格、4 空格或 Tab 均可，公共前导缩进会被自动去除。
+        p Luolita（萝莉塔）是一个类似 Vue 的单文件组件生成器。它将 <code>.luoli</code> 文件中的三种语法分别编译为标准的 JavaScript、HTML 和 CSS：
+        ul
+          li <code>coffee:</code> &mdash; CoffeeScript &rarr; JavaScript（含 source map）
+          li <code>template:</code> &mdash; Pug 模板 &rarr; HTML（变量自动桥接）
+          li <code>style:</code> &mdash; Stylus &rarr; CSS
+        p 支持 Node.js 命令行和浏览器两种运行方式。缩进自动检测，2 空格、4 空格或 Tab 均可，公共前导缩进会被自动去除。
 
       .docs-section
         h2 Node.js 使用
@@ -168,10 +167,10 @@ template:
 
     script.
       function revealDocs() {
-        var content = document.querySelector('.docs-content.collapsible')
-        if (content) {
-          content.classList.add('visible')
-          document.querySelector('.docs').scrollIntoView({ behavior: 'smooth' })
+        var section = document.querySelector('section.docs.collapsible')
+        if (section) {
+          section.classList.add('visible')
+          section.scrollIntoView({ behavior: 'smooth' })
         }
       }
       document.querySelectorAll('.feature-card').forEach(function(card) {
@@ -482,14 +481,14 @@ style:
   .docs-section ul li
     margin-bottom: 4px
 
-  // --- Collapsible docs content ---
-  .docs-content.collapsible
+  // --- Collapsible docs ---
+  section.docs.collapsible
     max-height: 0
     overflow: hidden
     opacity: 0
     transition: max-height .6s cubic-bezier(.4, 0, .2, 1), opacity .4s ease
     &.visible
-      max-height: 2000px
+      max-height: 5000px
       opacity: 1
 
   // --- Inline code ---
