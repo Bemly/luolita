@@ -508,6 +508,7 @@ style:
     font-size: .85rem
     line-height: var(--vp-code-line-height)
     border: 1px solid var(--vp-c-divider)
+    white-space: pre-wrap
 
   .code-block code
     background: none
@@ -515,6 +516,7 @@ style:
     padding: 0
     border-radius: 0
     font-size: inherit
+    white-space: pre
 
   // --- API table ---
   .api-table
