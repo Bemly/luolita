@@ -32,165 +32,32 @@ pnpm exec coffee luolita.coffee --help
 
 ## 浏览器使用 Browser
 
-在网页中直接加载 `.luoli` 文件并编译，无需服务器：
+在网页中直接加载 `.luoli` 文件并编译，零外部依赖，单个 `<script>` 标签即可使用：
 
 ```html
-<!-- 按顺序加载依赖 -->
-<script src="https://cdn.jsdelivr.net/npm/coffeescript@2/dist/coffeescript.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/pug@3/pug.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/stylus@0/dist/stylus.min.js"></script>
-<script src="luolita.browser.coffee" type="text/coffeescript"></script>
+<!-- 引入打包好的 bundle，已内置 CoffeeScript / Pug / Stylus 运行时 -->
+<script src="luolita.browser.bundle.js"></script>
 
 <script>
-  // 从 .luoli 文件或 <textarea>/<pre> 中获取源码
-  var src = 'coffee:\n  msg = "Hello"\ntemplate:\n  h1= msg\nstyle:\n  h1\n    color: red\n'
-
-  // 编译并渲染到页面
-  Luolita.renderToDOM(src, '#app', { outputName: 'myapp' })
+  fetch('example.luoli')
+    .then(function (res) { return res.text() })
+    .then(function (text) {
+      Luolita.renderToDOM(text, '#app', { outputName: 'example' })
+    })
 </script>
 ```
 
 `Luolita` API：
-- `Luolita.compile(text, opts)` — 编译 `.luoli` 源码，返回 `Promise<{coffee, template, style}>`
-- `Luolita.renderToDOM(text, target, opts)` — 编译并渲染到 DOM 元素
+
+| 方法 | 说明 | 返回 |
+|---|---|---|
+| `Luolita.compile(text, opts)` | 编译 `.luoli` 文本 | `Promise<{ coffee: {js, map}, template, style }>` |
+| `Luolita.renderToDOM(text, target, opts)` | 编译并渲染到 DOM 元素 | 无 |
+
 - `opts.outputName` — 输出文件名前缀（模板中可用 `name` 变量引用资源路径）
 - `opts.debug` — 是否打印调试日志（默认 `true`）
 
-示例：打开 `example/browser.html` 即可在浏览器中查看完整效果。
-
-## 执行代码 Code
-
-本 **代码段** 由 文学咖啡脚本 构建\
-this **gist** Powered by Literate CoffeeScript
-
-此文件适用于 ESM 模块支援 \
-This is ESM module support.
-
-```coffeescript
-
-  import * as cfs from "coffeescript"
-  import * as pug from "pug"
-  import sty from "stylus"
-  import { readFileSync, createReadStream, writeFileSync, mkdirSync, existsSync } from "fs"
-  import { resolve, basename, extname } from "path"
-  import JSON from 'json5'
-  import readline from "readline"
-
-  NAME = "[luolita]"
-  ENCODING = "utf-8"
-  COFFEE_OPTIONS =
-    bare: true
-    header: false
-    sourceMap: true
-    inlineMap: true
-
-  DEBUG = true
-
-  # Load config if available
-  CONFIG = {}
-  try
-    { config: CONFIG } = JSON.parse readFileSync "package.json5", "utf-8"
-  catch
-    # No config, use defaults
-
-  # Resolve paths
-  PATH = resolve process.argv[2] or "temp/test.luoli"
-  OUTPUT_DIR = resolve "temp"
-  OUTPUT_NAME = basename PATH, extname PATH
-
-  mkdirSync OUTPUT_DIR, recursive: true unless existsSync OUTPUT_DIR
-
-  if DEBUG
-    console.log "#{ NAME } use ES Modules loader."
-    console.log "#{ NAME } CoffeeScript ver: #{ cfs.VERSION }"
-    console.log "#{ NAME } Reading file: #{ PATH }"
-
-  file = readline.createInterface
-    input: createReadStream PATH, encoding: ENCODING
-
-  # 0: coffeescript, 1: pug, 2: stylus
-
-  file_segments = {}
-  file_segment_status = ""
-  output_segments = {}
-
-  sfc_var_bridge = (coffee_src) ->
-    vars = {}
-    lines = coffee_src.split "\n"
-    for line in lines
-      match = line.match /^\s*([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=\s*(.+)$/
-      if match
-        try
-          result = cfs.eval match[2], bare: true
-          vars[match[1]] = result
-        catch
-          vars[match[1]] = match[2].trim()
-    vars
-
-  dedent = (text) ->
-    lines = text.split '\n'
-    nonEmpty = lines.filter (l) -> l.trim().length > 0
-    return text if nonEmpty.length is 0
-    minIndent = Math.min ...nonEmpty.map (l) ->
-      match = l.match /^(\s*)/
-      if match then match[1].length else 0
-    if minIndent > 0
-      lines.map((l) -> if l.length >= minIndent then l.substring(minIndent) else l.trimStart()).join '\n'
-    else
-      text
-
-  output2file = (json, dir, name) ->
-    writeFileSync "#{ dir }/#{ name }.css", json.style
-    writeFileSync "#{ dir }/#{ name }.js", json.coffee.js
-    writeFileSync "#{ dir }/#{ name }.html", json.template
-
-  file.on "line", (line) ->
-    if DEBUG then console.log "#{ NAME } #{ PATH }> #{ line }"
-    switch line.trimEnd()
-      when "coffee:" then file_segment_status = "coffee"
-      when "template:" then file_segment_status = "template"
-      when "style:" then file_segment_status = "style"
-      else
-        if file_segment_status
-          file_segments[file_segment_status] ?= ""
-          file_segments[file_segment_status] += line + '\n'
-
-  file.on "close", ->
-    if DEBUG then console.log "#{ NAME } Close file: #{ PATH }"
-
-    unless file_segment_status or Object.keys(file_segments).length > 0
-      console.error "#{ NAME } Error: no sections found in #{ PATH }"
-      process.exit 1
-
-    try
-      if file_segments.coffee?
-        coffee_src = dedent file_segments.coffee
-        bridge_vars = sfc_var_bridge coffee_src
-        bridge_vars.name = OUTPUT_NAME
-        output_segments.coffee = cfs.compile coffee_src, COFFEE_OPTIONS
-      else
-        bridge_vars = {}
-        output_segments.coffee = js: ""
-
-      if file_segments.template?
-        output_segments.template = pug.render dedent(file_segments.template), bridge_vars
-      else
-        output_segments.template = ""
-
-      if file_segments.style?
-        output_segments.style = sty(dedent(file_segments.style), { define: { "bridge_vars": bridge_vars } }).render()
-      else
-        output_segments.style = ""
-    catch err
-      console.error "#{ NAME } Compilation error: #{ err.message }"
-      process.exit 1
-
-    if DEBUG then console.log output_segments
-    output2file output_segments, OUTPUT_DIR, OUTPUT_NAME
-
-  export default output_segments
-
-```
+打开 [在线演示](https://bemly.github.io/luolita/) 即可在浏览器中查看完整效果。
 
 ## 示例文件 Example
 
@@ -232,7 +99,7 @@ Coffee 段中定义的变量（如 `title`、`message`、`count`）会自动桥�
 ## 更新内容 CHANGELOG.md
 
 ### [0.1.4] - 2026-04-12
-- 浏览器版本：luolita.browser.js，网页中直接编译 .luoli 文件
+- 浏览器 bundle：零依赖单文件，内置 CoffeeScript / Pug / Stylus 运行时
 - 实现 sfc_var_bridge：coffee 段变量自动桥接到 template 和 style
 - 实现 CLI 参数：-o/--output、-n/--name、-q/--quiet、-h/--help
 - 实现 dedent：自动去除 section 内容公共缩进
@@ -241,6 +108,7 @@ Coffee 段中定义的变量（如 `title`、`message`、`count`）会自动桥�
 - 修复 minimist 参数解析、Pug locals 传递等多个 bug
 - 创建 .gitignore、CHANGELOG.md、示例文件
 - 重构 package.json5 脚本，移除有问题的 preinstall/prepack
+- docs/ 类 Wiki 站点：VitePress 风格，展示 Node.js 和浏览器两种使用方式
 
 ### [0.0.x] - 2024-08-21
 - 新建文件夹 Create project
