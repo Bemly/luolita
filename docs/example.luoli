@@ -1,22 +1,13 @@
 coffee:
-  title = 'Luolita'
-  tagline = '类似 Vue 的单文件组件生成器'
-  description = '将 .luoli 文件解析为三种语法糖：CoffeeScript、Pug 和 Stylus，分别编译为标准的 JavaScript、HTML 和 CSS。'
+  title = Luolita
   githubUrl = 'https://github.com/bemly/luolita'
+  f1Title = CoffeeScript
+  f2Title = Pug
+  f3Title = Stylus
 
-  f1Icon = '&#9749;'
-  f1Title = 'CoffeeScript'
-  f1Details = 'CoffeeScript 编译为 JavaScript，自带源码映射，简洁优雅的语法输出。'
-  f2Icon = '&#128054;'
-  f2Title = 'Pug'
-  f2Details = 'Pug 模板编译为 HTML，CoffeeScript 变量自动桥接为模板 locals。'
-  f3Icon = '&#127912;'
-  f3Title = 'Stylus'
-  f3Details = 'Stylus 编译为 CSS，支持嵌套、变量、混合等高级特性。'
-
-  installCmd = '$ pnpm add luolita\n# 或\n$ npm install luolita'
+  installCmd = 
   cliExample = 'pnpm exec coffee luolita.coffee src/app.luoli -o dist/ -n app'
-  browserExample = '<script src="luolita.browser.bundle.js"></script>\n<script>\n  Luolita.renderToDOM(source, \'#app\')\n</script>'
+  browserExample = '&lt;script src=&quot;luolita.browser.bundle.js&quot;&gt;&lt;/script&gt;\n&lt;script&gt;\n Luolita.renderToDOM(source, \&#39;#app\&#39;)\n&lt;/script&gt;'
 
   coffeeSrc = '''
     # luoli 文件格式示例
@@ -43,7 +34,6 @@ coffee:
   '''
 
 template:
-  <!DOCTYPE html>
   html(lang="zh-CN")
     head
       meta(charset="UTF-8")
@@ -64,25 +54,25 @@ template:
 
       section.hero
         h1= title
-        p.tagline= tagline
-        p.desc= description
+        p.tagline= '类似 Vue 的单文件组件生成器'
+        p.desc= '将 .luoli 文件解析为三种语法糖：CoffeeScript、Pug 和 Stylus，分别编译为标准的 JavaScript、HTML 和 CSS。'
         .hero-actions
           .btn.btn-brand(onclick="document.querySelector('.docs').scrollIntoView({behavior:'smooth'})") 快速开始
           a.btn.btn-alt(href=githubUrl, target="_blank", rel="noopener") GitHub 仓库
 
       section.features
         .feature-card
-          .icon!= f1Icon
+          .icon!= '&#9749;'
           h3= f1Title
-          p= f1Details
+          p= 'CoffeeScript 编译为 JavaScript，自带源码映射，简洁优雅的语法输出。'
         .feature-card
-          .icon!= f2Icon
+          .icon!= '&#128054;'
           h3= f2Title
-          p= f2Details
+          p= 'Pug 模板编译为 HTML，CoffeeScript 变量自动桥接为模板 locals。'
         .feature-card
-          .icon!= f3Icon
+          .icon!= '&#127912;'
           h3= f3Title
-          p= f3Details
+          p= 'Stylus 编译为 CSS，支持嵌套、变量、混合等高级特性。'
 
       section.docs
         .docs-section
@@ -98,7 +88,7 @@ template:
           h2 Node.js 使用
           h3 安装
           .code-block
-            code!= installCmd
+            code!= '$ pnpm add luolita\n# 或\n$ npm install luolita'
           h3 命令行
           .code-block
             code!= cliExample

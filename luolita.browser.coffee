@@ -50,20 +50,38 @@ do ->
   # --- Extract variable assignments from coffee source ---
   sfcVarBridge = (coffeeSrc) ->
     vars = {}
-    for line in coffeeSrc.split '\n'
+    lines = coffeeSrc.split '\n'
+    i = 0
+    while i < lines.length
+      line = lines[i]
+      # Skip triple-quoted strings (''' or """)
+      if /'''|"""/.test line
+        i++
+        while i < lines.length
+          break if /'''|"""/.test lines[i]
+          i++
+        i++
+        continue
       match = line.match /^\s*([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=\s*(.+)$/
       if match
         raw = match[2].trim()
-        # Skip if value is a bare identifier (no quotes, not an expression)
-        continue if /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test raw
-        try
-          js = cfs.compile raw, bare: true, header: false
-          vars[match[1]] = (new Function "try{return(#{ js })}catch(e){throw e}")()
-        catch e
-          vars[match[1]] = raw
+        # If it's a quoted string literal, extract the inner value directly
+        if /^".*"$/.test raw
+          vars[match[1]] = raw.slice 1, -1
+        else if /^'.*'$/.test raw
+          vars[match[1]] = raw.slice 1, -1
+        else
+          # For bare identifiers or other expressions, try to eval the compiled JS
+          try
+            js = cfs.compile raw, bare: true, header: false
+            vars[match[1]] = (new Function "return (#{ js })")()
+          catch e
+            # Bare identifier that can't be resolved — treat as plain string
+            vars[match[1]] = raw
+      i++
     vars
 
-  # --- Compile stylus (use stylus.render sync API) ---
+  # --- Compile stylus (sync, returns CSS string) ---
   compileStylus = (src, vars) ->
     Promise.resolve().then ->
       sty.render dedent(src), {}
@@ -127,6 +145,9 @@ do ->
         scriptTag = document.createElement 'script'
         scriptTag.textContent = result.coffee.js
         document.body.appendChild scriptTag
+    .catch (err) ->
+      console.error "#{ NAME } compile error:", err
+      el.textContent = 'Compile error: ' + err.message
 
   # Expose
   window.Luolita =
