@@ -8,7 +8,7 @@ Usage:
 
 cfs = require "coffeescript"
 pug = require "pug"
-sty = require "stylus"
+sty = require "./luolita.stylus.js"
 
 do ->
   NAME = '[luolita browser]'
@@ -83,15 +83,19 @@ do ->
         else if /^'.*'$/.test raw
           vars[match[1]] = raw.slice 1, -1
         else
-          # Bare identifier or expression — treat as plain string to avoid
-          # CoffeeScript compiling `foo` into `(typeof CoffeeScript !== ...)`
-          vars[match[1]] = raw
+          # Try to parse as JSON (arrays, objects, numbers, booleans)
+          try
+            vars[match[1]] = JSON.parse raw
+          catch e
+            # Bare identifier or invalid — store as raw string
+            vars[match[1]] = raw
     vars
 
-  # --- Compile stylus (sync, returns CSS string) ---
+  # --- Compile stylus (returns CSS string via callback) ---
   compileStylus = (src, vars) ->
-    Promise.resolve().then ->
-      sty.render dedent(src), {}
+    new Promise (resolve, reject) ->
+      sty.render dedent(src), (err, css) ->
+        if err then reject err else resolve css
 
   # --- Main compile API ---
   compile = (text, opts = {}) ->
@@ -164,3 +168,39 @@ do ->
 
   console.log "#{ NAME } v#{ window.Luolita.VERSION } loaded."
   console.log "#{ NAME } CoffeeScript #{ cfs.VERSION }"
+
+  # --- Auto-init: find all <link rel="luolita" href="..."> and render ---
+  init = ->
+    links = document.querySelectorAll 'link[rel="luolita"]'
+    return if links.length is 0
+    console.log "#{ NAME } Auto-init: found #{ links.length } luolita link(s)"
+    for link in links
+      do (link) ->
+        href = link.getAttribute 'href'
+        return unless href?
+        console.log "#{ NAME } Auto-init: loading #{ href }"
+        fetch(href)
+          .then (res) -> res.text()
+          .then (text) ->
+            compile(text, {}).then (result) ->
+              if result.style
+                styleTag = document.createElement 'style'
+                styleTag.textContent = result.style
+                document.head.appendChild styleTag
+
+              if result.template
+                wrapper = document.createElement 'div'
+                wrapper.innerHTML = result.template
+                while wrapper.firstChild
+                  document.body.appendChild wrapper.firstChild
+
+              if result.coffee?.js
+                scriptTag = document.createElement 'script'
+                scriptTag.textContent = result.coffee.js
+                document.body.appendChild scriptTag
+            .catch (err) ->
+              console.error "#{ NAME } Compile error:", err
+          .catch (err) ->
+            console.error "#{ NAME } Fetch error (#{ href }):", err
+
+  init()
