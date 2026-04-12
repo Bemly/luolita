@@ -1,15 +1,11 @@
 ###
 luolita.browser.coffee — Luolita SFC compiler for the browser
 
-Usage (load in order):
+Usage:
   <script src="https://cdn.jsdelivr.net/npm/coffeescript@2/dist/coffeescript.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/pug@3/pug.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/stylus@0/dist/stylus.min.js"></script>
   <script src="luolita.browser.coffee" type="text/coffeescript"></script>
-
-Then:
-  Luolita.compile(luoliText).then (result) -> ...
-  Luolita.renderToDOM(luoliText, document.getElementById('app'))
 ###
 
 do ->
@@ -17,11 +13,11 @@ do ->
 
   # --- Dependency checks ---
   unless window.CoffeeScript?
-    throw new Error "#{ NAME } CoffeeScript not loaded. Include coffeescript.min.js first."
+    throw new Error "#{ NAME } CoffeeScript not loaded"
   unless window.pug?
-    throw new Error "#{ NAME } pug not loaded. Include pug.min.js first."
+    throw new Error "#{ NAME } pug not loaded"
   unless window.stylus?
-    throw new Error "#{ NAME } stylus not loaded. Include stylus.min.js first."
+    throw new Error "#{ NAME } stylus not loaded"
 
   cfs = window.CoffeeScript
   pug = window.pug
@@ -73,6 +69,12 @@ do ->
           vars[match[1]] = match[2].trim()
     vars
 
+  # --- Compile stylus (browser API is callback-based) ---
+  compileStylus = (src, vars) ->
+    new Promise (resolve, reject) ->
+      sty.render dedent(src), {}, (err, css) ->
+        if err then reject err else resolve css
+
   # --- Main compile API ---
   compile = (text, opts = {}) ->
     debug = opts.debug ? true
@@ -82,11 +84,12 @@ do ->
 
     segments = parseLuoli text
     if Object.keys(segments).length is 0
-      return Promise.reject new Error "#{ NAME } Error: no sections (coffee:/template:/style:) found in input"
+      return Promise.reject new Error "#{ NAME } Error: no sections found"
 
-    outputSegments = {}
     bridgeVars = {}
+    outputSegments = {}
 
+    # Compile coffee
     if segments.coffee?
       coffeeSrc = dedent segments.coffee
       bridgeVars = sfcVarBridge coffeeSrc
@@ -96,18 +99,23 @@ do ->
     else
       outputSegments.coffee = js: ''
 
+    # Compile template (synchronous)
     if segments.template?
-      outputSegments.template = pug.compile(dedent segments.template) bridgeVars
+      fn = pug.compile dedent segments.template
+      outputSegments.template = fn bridgeVars
     else
       outputSegments.template = ''
 
-    if segments.style?
-      outputSegments.style = sty(dedent segments.style, define: bridge_vars: bridgeVars).render()
+    # Compile style (async in browser)
+    stylePromise = if segments.style?
+      compileStylus segments.style, bridgeVars
     else
-      outputSegments.style = ''
+      Promise.resolve ''
 
-    console.log "#{ NAME } Compilation complete:", Object.keys(outputSegments) if debug
-    Promise.resolve outputSegments
+    return stylePromise.then (css) ->
+      outputSegments.style = css
+      console.log "#{ NAME } Compilation complete:", Object.keys(outputSegments) if debug
+      Promise.resolve outputSegments
 
   # --- Render to DOM ---
   renderToDOM = (text, target, opts = {}) ->
@@ -115,16 +123,13 @@ do ->
     throw new Error "#{ NAME } Target element not found: #{ target }" unless el?
 
     compile(text, opts).then (result) ->
-      # Inject styles
       if result.style
         styleTag = document.createElement 'style'
         styleTag.textContent = result.style
         document.head.appendChild styleTag
 
-      # Inject HTML
       el.innerHTML = result.template
 
-      # Execute JS if present
       if result.coffee?.js
         scriptTag = document.createElement 'script'
         scriptTag.textContent = result.coffee.js
