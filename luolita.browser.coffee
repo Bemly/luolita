@@ -59,11 +59,10 @@ do ->
           vars[match[1]] = match[2].trim()
     vars
 
-  # --- Compile stylus (browser API is callback-based) ---
+  # --- Compile stylus (handles both sync and async) ---
   compileStylus = (src, vars) ->
-    new Promise (resolve, reject) ->
-      sty.render dedent(src), {}, (err, css) ->
-        if err then reject err else resolve css
+    Promise.resolve().then ->
+      stylus.render dedent(src), {}
 
   # --- Main compile API ---
   compile = (text, opts = {}) ->
