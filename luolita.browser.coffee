@@ -54,7 +54,8 @@ do ->
       match = line.match /^\s*([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=\s*(.+)$/
       if match
         try
-          vars[match[1]] = cfs.eval match[2], bare: true
+          js = cfs.compile match[2], bare: true, header: false
+          vars[match[1]] = eval js
         catch e
           vars[match[1]] = match[2].trim()
     vars
