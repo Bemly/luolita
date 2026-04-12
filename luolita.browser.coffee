@@ -53,11 +53,14 @@ do ->
     for line in coffeeSrc.split '\n'
       match = line.match /^\s*([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=\s*(.+)$/
       if match
+        raw = match[2].trim()
+        # Skip if value is a bare identifier (no quotes, not an expression)
+        continue if /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test raw
         try
-          js = cfs.compile match[2], bare: true, header: false
-          vars[match[1]] = eval js
+          js = cfs.compile raw, bare: true, header: false
+          vars[match[1]] = (new Function "try{return(#{ js })}catch(e){throw e}")()
         catch e
-          vars[match[1]] = match[2].trim()
+          vars[match[1]] = raw
     vars
 
   # --- Compile stylus (use stylus.render sync API) ---

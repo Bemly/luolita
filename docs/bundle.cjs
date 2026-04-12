@@ -51,11 +51,15 @@ esbuild.build({
     'module': '{createRequire:function(){throw new Error("module.createRequire not available")}}',
     'pug-runtime': pugRuntimeStub,
     'domain': '{create:function(){return{on:function(){},enter:function(){},exit:function(){},run:function(fn){fn()}}},active:null}',
+    'babel-core': '{}',
+    '@babel/core': '{}',
+    'supports-color': '{level:0,hasBasic:false,has256:false,has16m:false,stdout:{isTTY:!1},stderr:{isTTY:!1}}',
   };
 
   // Detect the minified require function name from the IIFE body
-  // esbuild uses: var ot=(r=>typeof require<"u"?require:...)
-  const requireFnMatch = code.match(/var\s+([a-zA-Z_$][a-zA-Z0-9_$]*)=\(r=>typeof require<"u"\?require/);
+  // esbuild uses patterns like: var ot=(r=>typeof require<"u"?require:...)
+  // The parameter name may vary (r, t, e, etc.)
+  const requireFnMatch = code.match(/var\s+([a-zA-Z_$][a-zA-Z0-9_$]*)=\([a-zA-Z_$]=>typeof require<"u"\?require/);
   const requireFn = requireFnMatch ? requireFnMatch[1] : null;
   console.log('Minified require function name:', requireFn);
 
