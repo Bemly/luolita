@@ -13,24 +13,18 @@ esbuild.build({
   let code = fs.readFileSync('dist/luolita.browser.bundle.js', 'utf8');
 
   // Stub fs: replace require("fs") with an inline stub object
-  // Read actual stylus library files so the bundled stylus can import them
+  // Read actual stylus library files and embed as base64 to avoid escaping issues
   const stylusLibDir = require('path').resolve(__dirname, '..', 'node_modules', '.pnpm', 'stylus@0.63.0', 'node_modules', 'stylus', 'lib');
   const stylusFuncsPath = require('path').join(stylusLibDir, 'functions', 'index.styl');
-  let stylusFuncs = '';
+  let stylusFuncsB64 = '';
   try {
-    stylusFuncs = fs.readFileSync(stylusFuncsPath, 'utf-8');
+    const content = fs.readFileSync(stylusFuncsPath, 'utf-8');
+    stylusFuncsB64 = Buffer.from(content).toString('base64');
   } catch(e) {
-    // Try alternate path
-    try {
-      stylusFuncs = fs.readFileSync(require('path').resolve(__dirname, '..', 'node_modules', 'stylus', 'lib', 'functions', 'index.styl'), 'utf-8');
-    } catch(e2) {
-      console.warn('Warning: could not read stylus functions file');
-    }
+    console.warn('Warning: could not read stylus functions file');
   }
-  // Escape for embedding in JS string
-  const stylusFuncsEscaped = JSON.stringify(stylusFuncs);
 
-  const fsStub = '{readFileSync:function(p){if(/functions[\\\\/]index\\.styl$/.test(p))return '+stylusFuncsEscaped+';return""},readFile:function(){throw new Error("fs.readFile not available")},existsSync:function(){return!1},statSync:function(){throw new Error("fs.statSync not available")},stat:function(a,b){b&&b(new Error("fs.stat not available"))},readdirSync:function(){return[]},readdir:function(a,b){b&&b(null,[])},realpathSync:function(a){return a},accessSync:function(){},lstatSync:function(){throw new Error("fs.lstatSync not available")},readlinkSync:function(){throw new Error("fs.readlinkSync not available")},writeFileSync:function(){},writeFile:function(a,b,c){c&&c()},mkdirSync:function(){},mkdir:function(a,b){b&&b()},unlinkSync:function(){},unlink:function(a,b){b&&b()},rmdirSync:function(){},rmdir:function(a,b){b&&b()},renameSync:function(){},rename:function(a,b,c){c&&c()},truncateSync:function(){},truncate:function(a,b){b&&b()},chmodSync:function(){},chmod:function(a,b,c){c&&c()},openSync:function(){return-1},open:function(a,b,c){c&&c(null,-1)},closeSync:function(){},close:function(a,b){b&&b()},createReadStream:function(){},createWriteStream:function(){},constants:{O_RDONLY:0,O_WRONLY:1,O_RDWR:2,O_CREAT:64,O_TRUNC:512,O_APPEND:1024,O_EXCL:128},F_OK:0,R_OK:4,W_OK:2,X_OK:1}';
+  const fsStub = '{readFileSync:function(p){if(/functions[\\\\/]index\\.styl$/.test(p))return atob("'+stylusFuncsB64+'");return""},readFile:function(){throw new Error("fs.readFile not available")},existsSync:function(){return!1},statSync:function(){throw new Error("fs.statSync not available")},stat:function(a,b){b&&b(new Error("fs.stat not available"))},readdirSync:function(){return[]},readdir:function(a,b){b&&b(null,[])},realpathSync:function(a){return a},accessSync:function(){},lstatSync:function(){throw new Error("fs.lstatSync not available")},readlinkSync:function(){throw new Error("fs.readlinkSync not available")},writeFileSync:function(){},writeFile:function(a,b,c){c&&c()},mkdirSync:function(){},mkdir:function(a,b){b&&b()},unlinkSync:function(){},unlink:function(a,b){b&&b()},rmdirSync:function(){},rmdir:function(a,b){b&&b()},renameSync:function(){},rename:function(a,b,c){c&&c()},truncateSync:function(){},truncate:function(a,b){b&&b()},chmodSync:function(){},chmod:function(a,b,c){c&&c()},openSync:function(){return-1},open:function(a,b,c){c&&c(null,-1)},closeSync:function(){},close:function(a,b){b&&b()},createReadStream:function(){},createWriteStream:function(){},constants:{O_RDONLY:0,O_WRONLY:1,O_RDWR:2,O_CREAT:64,O_TRUNC:512,O_APPEND:1024,O_EXCL:128},F_OK:0,R_OK:4,W_OK:2,X_OK:1}';
 
   // Stub pug-runtime
   const pugRuntimeStub = '{}';
