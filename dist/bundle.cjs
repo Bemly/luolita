@@ -26,7 +26,7 @@ esbuild.build({
     'fs': fsStub,
     'vm': vmStub,
     'os': osStub,
-    'assert': '{ok:function(){},strictEqual:function(){},deepStrictEqual:function(){},fail:function(){throw new Error("assertion failed")}}',
+    'assert': 'function(){if(!arguments[0])throw new Error("assertion failed"+(arguments[1]?": "+arguments[1]:""))}',
     'path': '{join:function(){return Array.prototype.join.call(arguments,"/")},resolve:function(){return Array.prototype.join.call(arguments,"/")},dirname:function(p){return p.split("/").slice(0,-1).join("/")||"."},basename:function(p,e){var n=p.split("/").pop();return e&&n.endsWith(e)?n.slice(0,-e.length):n},extname:function(p){var i=p.lastIndexOf(".");return i>0?p.slice(i):""},normalize:function(p){return p},relative:function(){return""},isAbsolute:function(p){return p.startsWith("/")},separator:"/",delimiter:":"}',
     'url': '{parse:function(u){return{pathname:u}},format:function(){return""},resolve:function(){return""}}',
     'crypto': '{createHash:function(){return{update:function(){return this},digest:function(){return""}}},randomBytes:function(n,cb){var b=new Uint8Array(n);if(cb){cb(null,b);return}return b},createCipheriv:function(){throw new Error("crypto not available")},createDecipheriv:function(){throw new Error("crypto not available")}}',
