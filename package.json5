@@ -18,9 +18,9 @@
     // 本地开发时构建 luolita.mjs（不影响 publish 流程）
     prepare: 'coffee -bl -c README.md && mv README.js luolita.mjs || true',
     // 清理生成的文件
-    clean: 'rm -rf luolita.mjs temp/ dist/',
-    // 构建浏览器版本：编译 coffee → esbuild 打包 → 内联 fs/pug-runtime stub
-    'build:browser': 'coffee -c -p luolita.browser.coffee > dist/luolita.browser.js && node dist/bundle.cjs',
+    clean: 'rm -rf luolita.mjs temp/',
+    // 构建浏览器版本：编译 coffee → esbuild 打包 + Node.js 模块 stub
+    'build:browser': 'mkdir -p dist && coffee -c -p luolita.browser.coffee > dist/luolita.browser.js && node docs/bundle.cjs',
   },
   keywords: [
     'coffeescript',

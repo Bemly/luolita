@@ -66,6 +66,22 @@ pnpm exec coffee luolita.coffee --help
 </script>
 ```
 
+## 浏览器构建 Browser Build
+
+`luolita.browser.bundle.js` 未提交到仓库，需自行构建：
+
+```bash
+# 1. 编译 CoffeeScript 为 JS
+pnpm exec coffee -c -p luolita.browser.coffee > dist/luolita.browser.js
+
+# 2. esbuild 打包 + 注入 Node.js 模块 stub
+node docs/bundle.cjs
+
+# 输出到 dist/luolita.browser.bundle.js，同时复制到 docs/
+```
+
+构建完成后将 bundle 复制到你的静态资源目录或 `docs/` 即可使用。
+
 `Luolita` API：
 
 | 方法 | 说明 | 返回 |
@@ -118,6 +134,14 @@ Coffee 段中定义的变量（如 `title`、`message`、`count`）会自动桥�
 **缩进**：`.luoli` 文件不限制具体缩进单位——2 空格、4 空格、Tab 均可，编译器会自动检测最小缩进单位并据此解析嵌套层级，公共前导缩进会被自动去除。
 
 ## 更新内容 CHANGELOG.md
+
+### [0.1.5] - 2026-04-13
+- 主页暗黑模式：纯暗色主题 + conic-gradient 30s 旋转渐变背景
+- 卡片鼠标跟随光晕：`radial-gradient` 跟随鼠标位置（CSS 变量 `--mx`/`--my`）
+- Docs 区域默认隐藏：点击「快速开始」或「使用指南」渐显展开，无需关闭
+- 缩进自动检测：支持 2 空格、4 空格、Tab，编译器自动检测最小缩进单位
+- 代码框换行修复：`white-space: pre-wrap` 确保长命令正确换行
+- `revealDocs` 修复：从 Pug `script.` 块移至 CoffeeScript 段，通过 `<script>` 标签注入执行
 
 ### [0.1.4] - 2026-04-13
 - 浏览器端 Stylus 编译器：纯浏览器实现的轻量级 Stylus-to-CSS 编译器（`luolita.stylus.coffee`）

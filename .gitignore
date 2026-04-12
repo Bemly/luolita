@@ -1,4 +1,5 @@
 node_modules/
 luolita.mjs
 temp/
+dist/
 *.bemly.json5
