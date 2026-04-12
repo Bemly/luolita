@@ -52,16 +52,35 @@ do ->
     vars = {}
     inTripleQuote = false
     tripleQuoteChar = null
+    tripleName = ''
+    tripleLines = []
     for line in coffeeSrc.split '\n'
       # Track triple-quote blocks
       if inTripleQuote
         if line.includes tripleQuoteChar
+          # Closing triple-quote — save accumulated content
+          beforeClose = line.split(tripleQuoteChar)[0]
+          if beforeClose.trim()
+            tripleLines.push beforeClose
+          # Join lines, strip common indent
+          content = tripleLines.join '\n'
+          vars[tripleName] = dedent content
           inTripleQuote = false
           tripleQuoteChar = null
+          tripleName = ''
+          tripleLines = []
+        else
+          tripleLines.push line
         continue
       if /'''|"""/.test line
         inTripleQuote = true
         tripleQuoteChar = if line.includes "'''" then "'''" else '"""'
+        # Check if this is a variable assignment line: varName = '''
+        assignMatch = line.match /^\s*([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=\s*'''$/
+        if assignMatch
+          tripleName = assignMatch[1]
+          tripleLines = []
+          continue
         # If opening and closing triple-quote on same line, toggle off immediately
         parts = line.split tripleQuoteChar
         if parts.length >= 3
@@ -72,10 +91,16 @@ do ->
       match = line.match /^\s*([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=\s*(.+)$/
       if match
         raw = match[2].trim()
-        # Skip if value starts with triple quotes
+        # Triple-quote start
         if /^'''|^"""/.test raw
           inTripleQuote = true
+          tripleName = match[1]
           tripleQuoteChar = if raw.startsWith "'''" then "'''" else '"""'
+          tripleLines = []
+          # Check if content is on same line after opening quotes
+          afterOpen = raw.substring 3
+          if afterOpen.length > 0
+            tripleLines.push afterOpen
           continue
         # Quoted string literals — extract directly
         if /^".*"$/.test raw

@@ -6,7 +6,15 @@ coffee:
   f3Title = 'Stylus'
 
   cliExample = 'pnpm exec coffee luolita.coffee src/app.luoli -o dist/ -n app'
-  browserExample = '&lt;link rel=&quot;luolita&quot; href=&quot;app.luoli&quot;&gt;\n&lt;script src=&quot;luolita.browser.bundle.js&quot;&gt;&lt;/script&gt;\n\n&lt;!-- 或使用 JS API --&gt;\n&lt;script&gt;\n Luolita.renderToDOM(source, \&#39;#app\&#39;)\n&lt;/script&gt;'
+  browserExample = '''
+    <link rel="luolita" href="app.luoli">
+    <script src="luolita.browser.bundle.js"></script>
+
+    <!-- 或使用 JS API -->
+    <script>
+     Luolita.renderToDOM(source, '#app')
+    </script>
+  '''
 
   coffeeSrc = '''
     # luoli 文件格式示例
@@ -78,7 +86,10 @@ template:
         h2 Node.js 使用
         h3 安装
         .code-block
-          code!= '$ pnpm add luolita\n# 或\n$ npm install luolita'
+          code.
+            $ pnpm add luolita
+            # 或
+            $ npm install luolita
         h3 命令行
         .code-block
           code!= cliExample
