@@ -57,6 +57,15 @@ esbuild.build({
 
   fs.writeFileSync('dist/luolita.browser.bundle.js', code);
 
+  // Inject process and global shims at the top of the IIFE
+  const processStub = 'var process={env:{},argv:[],execArgv:[],cwd:function(){return"/"},nextTick:function(f){setTimeout(f,0)},browser:!0,version:"browser",versions:{node:"0.0.0",v8:"0.0",uv:"0",zlib:"0"},platform:"browser",stdout:{},stderr:{},stdin:{},umask:function(){return 0},getuid:function(){return 0},getgid:function(){return 0},type:function(){return"Browser"},release:{},domain:null,throwDeprecation:!1,noDeprecation:!0,traceDeprecation:!1,__nwjs:!1};if(typeof window!=="undefined"&&!window.process)window.process=process;if(typeof globalThis!=="undefined"&&!globalThis.process)globalThis.process=process;var global=typeof globalThis!=="undefined"?globalThis:window;';
+
+  // Find the opening of the IIFE body and inject after it
+  // The bundle starts with: var LuolitaBundle=(()=>{
+  code = code.replace(/var LuolitaBundle=\(\(\)=>\{/,'var LuolitaBundle=(()=>{' + processStub);
+
+  fs.writeFileSync('dist/luolita.browser.bundle.js', code);
+
   // Verify
   const final = fs.readFileSync('dist/luolita.browser.bundle.js', 'utf8');
   const m = final.match(/require\(['"]([^'"]+)['"]\)/g) || [];
