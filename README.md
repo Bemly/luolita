@@ -39,7 +39,7 @@ pnpm exec coffee luolita.coffee --help
 <script src="https://cdn.jsdelivr.net/npm/coffeescript@2/dist/coffeescript.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/pug@3/pug.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/stylus@0/dist/stylus.min.js"></script>
-<script src="luolita.browser.js"></script>
+<script src="luolita.browser.coffee" type="text/coffeescript"></script>
 
 <script>
   // 从 .luoli 文件或 <textarea>/<pre> 中获取源码

@@ -5,7 +5,7 @@
   // TODO: 目前 COFFEE 不支持 ESM 模块化，55555
   type: 'commonjs',
   main: 'luolita.mjs',
-  browser: 'luolita.browser.js',
+  browser: 'luolita.browser.coffee',
   bin: 'luolita.coffee',
   // 这是一个类似 Vue 的单文件组件生成器，将 ".luoli" 文件解析为 3 种语法糖：coffeescript、pug、stylus。
   description: 'A like-vue Single-File Components generator that parses HTML+CSS+JS ".luoli" into 3-Syntactic sugar: coffeescript, pug, and stylus. ',
