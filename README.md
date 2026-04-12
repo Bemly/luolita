@@ -9,8 +9,8 @@ A like-vue Single-File Components generator that parses HTML+CSS+JS\
 ## 快速开始 Quick Start
 
 你需要先安装最基本的开发工具和依赖才能使用此工具链
-1. Node.js >= 20 LTS
-2. npm >= 10
+1. Node.js
+2. npm
 3. pnpm >= 9 (Optional, Recommended, .json5 support)
 
 然后在项目根目录下执行以下命令安装依赖：
@@ -68,7 +68,7 @@ pnpm exec coffee luolita.coffee --help
 
 ## 浏览器构建 Browser Build
 
-`luolita.browser.bundle.js` 未提交到仓库，需自行构建：
+`luolita.browser.bundle.js` 在 docs/ 中，如需自行构建：
 
 ```bash
 # 1. 编译 CoffeeScript 为 JS
@@ -136,14 +136,10 @@ Coffee 段中定义的变量（如 `title`、`message`、`count`）会自动桥�
 ## 更新内容 CHANGELOG.md
 
 ### [0.1.5] - 2026-04-13
-- 主页暗黑模式：纯暗色主题 + conic-gradient 30s 旋转渐变背景
-- 卡片鼠标跟随光晕：`radial-gradient` 跟随鼠标位置（CSS 变量 `--mx`/`--my`）
-- Docs 区域默认隐藏：点击「快速开始」或「使用指南」渐显展开，无需关闭
 - 缩进自动检测：支持 2 空格、4 空格、Tab，编译器自动检测最小缩进单位
-- 代码框换行修复：`white-space: pre-wrap` 确保长命令正确换行
 - `revealDocs` 修复：从 Pug `script.` 块移至 CoffeeScript 段，通过 `<script>` 标签注入执行
 
-### [0.1.4] - 2026-04-13
+### [0.1.4] - 2026-04-12
 - 浏览器端 Stylus 编译器：纯浏览器实现的轻量级 Stylus-to-CSS 编译器（`luolita.stylus.coffee`）
   - 支持缩进嵌套、变量、`&` 父选择器、多选择器、CSS 自定义属性
   - 替代原 `stylus` npm 包（依赖 Node.js API，无法在浏览器运行）
