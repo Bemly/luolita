@@ -1,27 +1,17 @@
 ###
 luolita.browser.coffee — Luolita SFC compiler for the browser
 
+Bundled with esbuild into dist/luolita.browser.bundle.js.
 Usage:
-  <script src="https://cdn.jsdelivr.net/npm/coffeescript@2/dist/coffeescript.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/pug@3/pug.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/stylus@0/dist/stylus.min.js"></script>
-  <script src="luolita.browser.coffee" type="text/coffeescript"></script>
+  <script src="luolita.browser.bundle.js"></script>
 ###
+
+cfs = require "coffeescript"
+pug = require "pug"
+sty = require "stylus"
 
 do ->
   NAME = '[luolita browser]'
-
-  # --- Dependency checks ---
-  unless window.CoffeeScript?
-    throw new Error "#{ NAME } CoffeeScript not loaded"
-  unless window.pug?
-    throw new Error "#{ NAME } pug not loaded"
-  unless window.stylus?
-    throw new Error "#{ NAME } stylus not loaded"
-
-  cfs = window.CoffeeScript
-  pug = window.pug
-  sty = window.stylus
 
   COFFEE_OPTIONS =
     bare: true
