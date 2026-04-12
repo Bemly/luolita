@@ -42,9 +42,11 @@ Options:
 - `luolita.stylus.coffee` — Lightweight in-browser Stylus-to-CSS compiler
 - `dist/bundle.cjs` — Browser bundle build script (esbuild + Node.js shim injection)
 - `dist/luolita.stylus.js` — Compiled Stylus compiler (used by browser bundle)
-- `README.md` — Also serves as ESM source via Literate CoffeeScript (compiled to `luolita.mjs`)
+- `README.md` — English documentation (ESM source via Literate CoffeeScript, compiled to `luolita.mjs`)
+- `README.zh.md` — Chinese documentation
 - `package.json5` — Package manifest in JSON5 format (allows comments)
-- `docs/` — Static site (GitHub Pages), example `.luoli` file and browser bundle
+- `docs/` — Static site (GitHub Pages), example `.luoli` files (zh + en) and browser bundle
+- `docs/en/` — English version of the homepage
 
 ### How It Works
 

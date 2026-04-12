@@ -10,14 +10,14 @@ coffee:
     &lt;link rel="luolita" href="app.luoli"&gt;
     &lt;script src="luolita.browser.bundle.js"&gt;&lt;/script&gt;
 
-    &lt;!-- 或使用 JS API --&gt;
+    &lt;!-- or use JS API --&gt;
     &lt;script&gt;
      Luolita.renderToDOM(source, '#app')
     &lt;/script&gt;
   '''
 
   coffeeSrc = '''
-    # luoli 文件格式示例
+    # luoli file format example
     coffee:
       greeting = "Hello, Luolita!"
       items = ["CoffeeScript", "Pug", "Stylus"]
@@ -59,121 +59,121 @@ template:
       .nav-inner
         .nav-title= title
         .nav-links
-          .nav-link.reveal-docs(onclick="revealDocs()") 使用指南
+          .nav-link.reveal-docs(onclick="revealDocs()") Usage
           a.nav-link(href=githubUrl, target="_blank", rel="noopener") GitHub
-          a.nav-link(href="en/") EN
+          a.nav-link(href="../") 中文
 
     section.hero
       h1= title
-      p.tagline= '类似 Vue 的单文件组件生成器，零运行时依赖'
-      p.desc= '将 .luoli 文件解析为三种语法糖：CoffeeScript、Pug 和 Stylus，分别编译为标准的 JavaScript、HTML 和 CSS。纯浏览器端编译，一个 <link> 即可轻松使用，自动缩进检测'
+      p.tagline= 'A Vue-like Single-File Component generator, zero runtime dependencies'
+      p.desc= 'Parses .luoli files into three syntactic sugars: CoffeeScript, Pug, and Stylus, compiled into standard JavaScript, HTML, and CSS. Pure browser-side compilation, just one &lt;link&gt; tag needed. Auto indent detection.'
       .hero-actions
-        .btn.btn-brand(onclick="revealDocs()") 快速开始
-        a.btn.btn-alt(href=githubUrl, target="_blank", rel="noopener") GitHub 仓库
+        .btn.btn-brand(onclick="revealDocs()") Get Started
+        a.btn.btn-alt(href=githubUrl, target="_blank", rel="noopener") GitHub
 
     section.features
       .feature-card
         .icon!= '&#9749;'
         h3= f1Title
-        p= 'CoffeeScript 编译为 JavaScript，自带源码映射，简洁优雅的语法输出。'
+        p= 'Compiles to JavaScript with source maps, clean and elegant syntax.'
       .feature-card
         .icon!= '&#128054;'
         h3= f2Title
-        p= 'Pug 模板编译为 HTML，CoffeeScript 变量自动桥接为模板 locals。'
+        p= 'Pug templates compiled to HTML, CoffeeScript variables auto-bridged as template locals.'
       .feature-card
         .icon!= '&#127912;'
         h3= f3Title
-        p= 'Stylus 编译为 CSS，支持嵌套、变量、混合等高级特性。'
+        p= 'Stylus compiled to CSS, supports nesting, variables, mixins and more.'
 
     section.docs(id="docs").collapsible
       .docs-section
-        h2 什么是 Luolita？
-        p Luolita（萝莉塔）是一个类似 Vue 的单文件组件生成器。它将 <code>.luoli</code> 文件中的三种语法分别编译为标准的 JavaScript、HTML 和 CSS：
+        h2 What is Luolita?
+        p Luolita is a Vue-like Single-File Component (SFC) generator. It compiles <code>.luoli</code> files with three section types into standard JavaScript, HTML, and CSS:
         ul
-          li <code>coffee:</code> &mdash; CoffeeScript &rarr; JavaScript（含 source map）
-          li <code>template:</code> &mdash; Pug 模板 &rarr; HTML（变量自动桥接）
+          li <code>coffee:</code> &mdash; CoffeeScript &rarr; JavaScript (with source map)
+          li <code>template:</code> &mdash; Pug templates &rarr; HTML (variables auto-bridged)
           li <code>style:</code> &mdash; Stylus &rarr; CSS
-        p 支持 Node.js 命令行和浏览器两种运行方式。缩进自动检测，2 空格、4 空格或 Tab 均可，公共前导缩进会被自动去除。
+        p Supports both Node.js CLI and browser runtime. Indentation is auto-detected (2-space, 4-space, or tab).
 
       .docs-section
-        h2 Node.js 使用
-        h3 安装
+        h2 Node.js Usage
+        h3 Install
         .code-block
           code.
             $ pnpm add luolita
-            # 或
+            # or
             $ npm install luolita
-        h3 命令行
+        h3 CLI
         .code-block
           code!= cliExample
-        h3 选项
+        h3 Options
         table.api-table
           thead
             tr
-              th 选项
-              th 说明
+              th Option
+              th Description
           tbody
             tr
               td <code>-o, --output</code>
-              td 输出目录（默认 <code>temp/</code>）
+              td Output directory (default: <code>temp/</code>)
             tr
               td <code>-n, --name</code>
-              td 输出文件前缀
+              td Output file prefix
             tr
               td <code>-q, --quiet</code>
-              td 关闭调试输出
+              td Suppress debug output
             tr
               td <code>-h, --help</code>
-              td 显示帮助信息
-        h3 输出文件
-        p 编译后生成三个文件：
+              td Show help
+        h3 Output Files
+        p Generates three files:
         ul
-          li <code>&lt;name&gt;.js</code> &mdash; JavaScript（含 source map）
-          li <code>&lt;name&gt;.html</code> &mdash; HTML 模板
-          li <code>&lt;name&gt;.css</code> &mdash; CSS 样式
+          li <code>&lt;name&gt;.js</code> &mdash; JavaScript (with source map)
+          li <code>&lt;name&gt;.html</code> &mdash; HTML template
+          li <code>&lt;name&gt;.css</code> &mdash; CSS styles
 
       .docs-section
-        h2 浏览器使用
+        h2 Browser Usage
         .code-block
           code!= browserExample
-        p 浏览器 bundle 已内置 CoffeeScript、Pug、Stylus 运行时，零外部依赖。使用 <code>&lt;link rel=&quot;luolita&quot; href=&quot;...&quot;&gt;</code> 声明式加载，页面打开即渲染。
+        p The browser bundle includes CoffeeScript, Pug, and Stylus runtimes with zero external dependencies. Use <code>&lt;link rel=&quot;luolita&quot; href=&quot;...&quot;&gt;</code> for declarative loading, renders on page open.
         h3 API
         table.api-table
           thead
             tr
-              th 方法
-              th 说明
+              th Method
+              th Description
           tbody
             tr
               td <code>Luolita.compile(text, opts)</code>
-              td 编译 .luoli 文本，返回 Promise
+              td Compiles .luoli text, returns Promise
             tr
               td <code>Luolita.renderToDOM(text, target)</code>
-              td 编译并渲染到 DOM 元素
+              td Compiles and renders to DOM element
 
       .docs-section
-        h2 .luoli 文件格式
+        h2 .luoli File Format
         .code-block
           code!= coffeeSrc
-        p 三个标记段均可选，省略某段则编译器输出空字符串。缩进自动检测，不限制具体空格数或 Tab。
+        p All three sections are optional. Omitting a section results in an empty output. Common leading indentation is automatically stripped.
 
       .docs-section
-        h2 API 参考
+        h2 API Reference
         table.api-table
           thead
             tr
-              th 方法
-              th 参数
-              th 返回
+              th Method
+              th Parameters
+              th Returns
           tbody
             tr
               td <code>compile(text, opts)</code>
-              td <code>text</code> 为 .luoli 内容，<code>opts</code> 含 <code>outputName</code>、<code>debug</code>
+              td <code>text</code> is .luoli content, <code>opts</code> has <code>outputName</code>, <code>debug</code>
               td <code>Promise&#123; coffee: &#123;js, map&#125;, template, style &#125;</code>
             tr
               td <code>renderToDOM(text, target, opts)</code>
-              td <code>target</code> 为 CSS 选择器或 DOM 元素
-              td 将结果注入到页面
+              td <code>target</code> is CSS selector or DOM element
+              td Injects result into the page
 
     footer.footer
       p Copyright &copy; Bemly_ &middot; WTFPL License
