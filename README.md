@@ -164,7 +164,54 @@ This is ESM module support.
 
 ```
 
+## 示例文件 Example
+
+创建一个 `.luoli` 文件，用 `coffee:`、`template:`、`style:` 三个标记分隔：
+
+```
+coffee:
+  title = "My App"
+  message = "Hello World!"
+  count = 42
+  console.log "Running #{ title }..."
+
+template:
+  doctype html
+  html
+    head
+      title= title
+      link(rel="stylesheet", href=name + ".css")
+    body
+      h1= message
+      p Count: #{ count }
+      script(src=name + ".js")
+
+style:
+  body
+    font-family: sans-serif
+    display: flex
+    justify-content: center
+    align-items: center
+    min-height: 100vh
+    margin: 0
+
+  h1
+    color: #333
+```
+
+Coffee 段中定义的变量（如 `title`、`message`、`count`）会自动桥接到 Template（Pug locals）和 Style 中使用。`name` 变量会自动注入，值为输出文件的前缀名，方便在模板中引用资源路径。
+
 ## 更新内容 CHANGELOG.md
+
+### [0.1.4] - 2026-04-12
+- 实现 sfc_var_bridge：coffee 段变量自动桥接到 template 和 style
+- 实现 CLI 参数：-o/--output、-n/--name、-q/--quiet、-h/--help
+- 实现 dedent：自动去除 section 内容公共缩进
+- 添加错误处理：文件不存在、空 section、编译失败
+- 修复 await 在非 async 回调中的运行时错误
+- 修复 minimist 参数解析、Pug locals 传递等多个 bug
+- 创建 .gitignore、CHANGELOG.md、示例文件
+- 重构 package.json5 脚本，移除有问题的 preinstall/prepack
 
 ### [0.0.x] - 2024-08-21
 - 新建文件夹 Create project
