@@ -7,13 +7,13 @@ coffee:
 
   cliExample = 'pnpm exec coffee luolita.coffee src/app.luoli -o dist/ -n app'
   browserExample = '''
-    <link rel="luolita" href="app.luoli">
-    <script src="luolita.browser.bundle.js"></script>
+    &lt;link rel="luolita" href="app.luoli"&gt;
+    &lt;script src="luolita.browser.bundle.js"&gt;&lt;/script&gt;
 
-    <!-- 或使用 JS API -->
-    <script>
+    &lt;!-- 或使用 JS API --&gt;
+    &lt;script&gt;
      Luolita.renderToDOM(source, '#app')
-    </script>
+    &lt;/script&gt;
   '''
 
   coffeeSrc = '''
@@ -516,7 +516,7 @@ style:
     padding: 0
     border-radius: 0
     font-size: inherit
-    white-space: pre
+    white-space: pre-wrap
 
   // --- API table ---
   .api-table
