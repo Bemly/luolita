@@ -59,10 +59,10 @@ do ->
           vars[match[1]] = match[2].trim()
     vars
 
-  # --- Compile stylus (sync, Node.js API bundled by esbuild) ---
+  # --- Compile stylus (use stylus.render sync API) ---
   compileStylus = (src, vars) ->
     Promise.resolve().then ->
-      sty(dedent(src), {}).render()
+      sty.render dedent(src), {}
 
   # --- Main compile API ---
   compile = (text, opts = {}) ->
