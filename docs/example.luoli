@@ -53,7 +53,7 @@ template:
     section.hero
       h1= title
       p.tagline= '类似 Vue 的单文件组件生成器，零运行时依赖'
-      p.desc= '将 .luoli 文件解析为三种语法糖：CoffeeScript、Pug 和 Stylus，分别编译为标准的 JavaScript、HTML 和 CSS。纯浏览器端编译，一个 &lt;script&gt; 标签即可使用。'
+      p.desc= '将 .luoli 文件解析为三种语法糖：CoffeeScript、Pug 和 Stylus，分别编译为标准的 JavaScript、HTML 和 CSS。纯浏览器端编译，一个 &lt;script&gt; 标签即可使用，缩进自动检测（2/4 空格或 Tab 均可）。'
       .hero-actions
         .btn.btn-brand(onclick="revealDocs()") 快速开始
         a.btn.btn-alt(href=githubUrl, target="_blank", rel="noopener") GitHub 仓库
@@ -81,7 +81,7 @@ template:
             li <code>coffee:</code> &mdash; CoffeeScript &rarr; JavaScript（含 source map）
             li <code>template:</code> &mdash; Pug 模板 &rarr; HTML（变量自动桥接）
             li <code>style:</code> &mdash; Stylus &rarr; CSS
-          p 支持 Node.js 命令行和浏览器两种运行方式。
+          p 支持 Node.js 命令行和浏览器两种运行方式。缩进自动检测，2 空格、4 空格或 Tab 均可，公共前导缩进会被自动去除。
 
       .docs-section
         h2 Node.js 使用
@@ -143,7 +143,7 @@ template:
         h2 .luoli 文件格式
         .code-block
           code!= coffeeSrc
-        p 三个标记段均可选，省略某段则编译器输出空字符串。公共前导缩进会被自动去除。
+        p 三个标记段均可选，省略某段则编译器输出空字符串。缩进自动检测，不限制具体空格数或 Tab。
 
       .docs-section
         h2 API 参考

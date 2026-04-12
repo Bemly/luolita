@@ -72,6 +72,6 @@ The `sfc_var_bridge` function extracts simple variable assignments from the coff
 - **In-browser Stylus**: `luolita.stylus.coffee` is a lightweight pure-browser Stylus-to-CSS compiler (no Node.js deps). Supports indentation-based nesting, variables, `&` parent reference, multi-selectors, and CSS custom properties.
 - **Browser bundle**: `dist/bundle.cjs` builds an IIFE bundle with Node.js module stubs (`fs`, `path`, `vm`, etc.) injected at build time.
 - **Auto-init**: Browser bundle auto-discovers `<link rel="luolita" href="...">` tags and renders them sequentially into the document body.
-- **Indentation handling**: A `dedent` function strips common leading whitespace from section content, allowing indented `.luoli` files.
+- **Indentation handling**: A `dedent` function automatically detects the minimum non-zero indentation (2-space, 4-space, tab, etc.) and strips it from all lines. Stylus compiler uses the same auto-detected unit to calculate nesting levels.
 - **Missing sections are skipped**: If a `.luoli` file omits a section, that output is an empty string.
 - **JSON5**: Used for `package.json5` to allow comments in config.
