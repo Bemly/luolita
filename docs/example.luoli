@@ -47,7 +47,7 @@ template:
       .nav-inner
         .nav-title= title
         .nav-links
-          .nav-link(onclick="document.querySelector('.docs').scrollIntoView({behavior:'smooth'})") 使用指南
+          .nav-link.reveal-docs(onclick="revealDocs()") 使用指南
           a.nav-link(href=githubUrl, target="_blank", rel="noopener") GitHub
 
     section.hero
@@ -55,7 +55,7 @@ template:
       p.tagline= '类似 Vue 的单文件组件生成器，零运行时依赖'
       p.desc= '将 .luoli 文件解析为三种语法糖：CoffeeScript、Pug 和 Stylus，分别编译为标准的 JavaScript、HTML 和 CSS。纯浏览器端编译，一个 &lt;script&gt; 标签即可使用。'
       .hero-actions
-        .btn.btn-brand(onclick="document.querySelector('.docs').scrollIntoView({behavior:'smooth'})") 快速开始
+        .btn.btn-brand(onclick="revealDocs()") 快速开始
         a.btn.btn-alt(href=githubUrl, target="_blank", rel="noopener") GitHub 仓库
 
     section.features
@@ -72,15 +72,16 @@ template:
         h3= f3Title
         p= 'Stylus 编译为 CSS，支持嵌套、变量、混合等高级特性。'
 
-    section.docs
+    section.docs(id="docs")
       .docs-section
         h2 什么是 Luolita？
-        p Luolita（萝莉塔）是一个类似 Vue 的单文件组件生成器。它将 <code>.luoli</code> 文件中的三种语法分别编译为标准的 JavaScript、HTML 和 CSS：
-        ul
-          li <code>coffee:</code> &mdash; CoffeeScript &rarr; JavaScript（含 source map）
-          li <code>template:</code> &mdash; Pug 模板 &rarr; HTML（变量自动桥接）
-          li <code>style:</code> &mdash; Stylus &rarr; CSS
-        p 支持 Node.js 命令行和浏览器两种运行方式。
+        .docs-content.collapsible
+          p Luolita（萝莉塔）是一个类似 Vue 的单文件组件生成器。它将 <code>.luoli</code> 文件中的三种语法分别编译为标准的 JavaScript、HTML 和 CSS：
+          ul
+            li <code>coffee:</code> &mdash; CoffeeScript &rarr; JavaScript（含 source map）
+            li <code>template:</code> &mdash; Pug 模板 &rarr; HTML（变量自动桥接）
+            li <code>style:</code> &mdash; Stylus &rarr; CSS
+          p 支持 Node.js 命令行和浏览器两种运行方式。
 
       .docs-section
         h2 Node.js 使用
@@ -166,6 +167,13 @@ template:
       p Copyright &copy; Bemly_ &middot; WTFPL License
 
     script.
+      function revealDocs() {
+        var content = document.querySelector('.docs-content.collapsible')
+        if (content) {
+          content.classList.add('visible')
+          document.querySelector('.docs').scrollIntoView({ behavior: 'smooth' })
+        }
+      }
       document.querySelectorAll('.feature-card').forEach(function(card) {
         card.addEventListener('mousemove', function(e) {
           var r = card.getBoundingClientRect()
@@ -176,99 +184,56 @@ template:
 
 style:
   :root
-    --vp-c-white: #ffffff
-    --vp-c-black: #000000
-    --vp-c-gray-1: #dddde3
-    --vp-c-gray-2: #e4e4e9
-    --vp-c-gray-3: #ebebef
-    --vp-c-gray-soft: rgba(142, 150, 170, .14)
-    --vp-c-indigo-1: #3451b2
-    --vp-c-indigo-2: #3a5ccc
-    --vp-c-indigo-3: #5672cd
-    --vp-c-indigo-soft: rgba(100, 108, 255, .14)
-    --vp-c-green-1: #18794e
-    --vp-c-green-2: #299764
-    --vp-c-green-3: #30a46c
-    --vp-c-green-soft: rgba(16, 185, 129, .14)
-    --vp-c-yellow-1: #915930
-    --vp-c-yellow-2: #946300
-    --vp-c-yellow-3: #9f6a00
-    --vp-c-yellow-soft: rgba(234, 179, 8, .14)
-    --vp-c-red-1: #b8272c
-    --vp-c-red-2: #d5393e
-    --vp-c-red-3: #e0575b
-    --vp-c-red-soft: rgba(244, 63, 94, .14)
-    --vp-c-sponsor: #db2777
-    --vp-c-bg: #ffffff
-    --vp-c-bg-alt: #f6f6f7
-    --vp-c-bg-elv: #ffffff
-    --vp-c-bg-soft: #f6f6f7
-    --vp-c-border: #c2c2c4
-    --vp-c-divider: #e2e2e3
-    --vp-c-gutter: #e2e2e3
-    --vp-c-text-1: #3c3c43
-    --vp-c-text-2: #67676c
-    --vp-c-text-3: #929295
-    --vp-c-default-1: var(--vp-c-gray-1)
-    --vp-c-default-2: var(--vp-c-gray-2)
-    --vp-c-default-3: var(--vp-c-gray-3)
-    --vp-c-default-soft: var(--vp-c-gray-soft)
+    --vp-c-black: #0a0a0a
+    --vp-c-bg: #0a0a0a
+    --vp-c-bg-alt: #111111
+    --vp-c-bg-elv: rgba(255, 255, 255, .04)
+    --vp-c-bg-soft: rgba(255, 255, 255, .03)
+    --vp-c-border: #333
+    --vp-c-divider: rgba(255, 255, 255, .08)
+    --vp-c-gutter: #222
+    --vp-c-text-1: #e5e5e5
+    --vp-c-text-2: #a0a0a8
+    --vp-c-text-3: #666
     --vp-c-brand-1: #6b9f93
     --vp-c-brand-2: #5a8a7e
     --vp-c-brand-3: #7aadad
     --vp-c-brand-soft: rgba(122, 173, 147, .14)
     --vp-c-brand: var(--vp-c-brand-1)
-    --vp-c-tip-1: var(--vp-c-brand-1)
-    --vp-c-tip-soft: var(--vp-c-brand-soft)
-    --vp-c-warning-1: var(--vp-c-yellow-1)
-    --vp-c-warning-soft: var(--vp-c-yellow-soft)
-    --vp-c-danger-1: var(--vp-c-red-1)
-    --vp-c-danger-soft: var(--vp-c-red-soft)
+    --vp-c-default-1: #2a2a2e
+    --vp-c-default-2: #222226
+    --vp-c-default-3: #1a1a1e
+    --vp-c-default-soft: rgba(255, 255, 255, .06)
+    --vp-c-gray-soft: rgba(142, 150, 170, .14)
+    --vp-c-yellow-soft: rgba(234, 179, 8, .14)
+    --vp-c-red-soft: rgba(244, 63, 94, .14)
     --vp-font-family-base: "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji"
     --vp-font-family-mono: ui-monospace, "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", monospace
-    --vp-shadow-2: 0 3px 12px rgba(0, 0, 0, .07), 0 1px 4px rgba(0, 0, 0, .07)
-    --vp-shadow-3: 0 12px 32px rgba(0, 0, 0, .1), 0 2px 6px rgba(0, 0, 0, .08)
     --vp-layout-max-width: 1440px
     --vp-nav-height: 64px
-    --vp-nav-bg-color: rgba(255, 255, 255, .8)
-    --vp-home-hero-name-color: var(--vp-c-brand-1)
-    --vp-home-hero-name-background: transparent
-    --vp-button-brand-border: transparent
-    --vp-button-brand-text: var(--vp-c-white)
-    --vp-button-brand-bg: var(--vp-c-brand-3)
-    --vp-button-brand-hover-border: transparent
-    --vp-button-brand-hover-text: var(--vp-c-white)
-    --vp-button-brand-hover-bg: var(--vp-c-brand-2)
-    --vp-button-brand-active-border: transparent
-    --vp-button-brand-active-text: var(--vp-c-white)
-    --vp-button-brand-active-bg: var(--vp-c-brand-1)
-    --vp-button-alt-border: transparent
-    --vp-button-alt-text: var(--vp-c-text-1)
-    --vp-button-alt-bg: var(--vp-c-default-3)
-    --vp-button-alt-hover-border: transparent
-    --vp-button-alt-hover-text: var(--vp-c-text-1)
-    --vp-button-alt-hover-bg: var(--vp-c-default-2)
-    --vp-button-alt-active-border: transparent
-    --vp-button-alt-active-text: var(--vp-c-text-1)
-    --vp-button-alt-active-bg: var(--vp-c-default-1)
-    --vp-code-font-size: .875em
-    --vp-code-color: var(--vp-c-brand-1)
-    --vp-code-bg: var(--vp-c-default-soft)
-    --vp-code-block-color: var(--vp-c-text-2)
-    --vp-code-block-bg: var(--vp-c-bg-alt)
-    --vp-code-block-divider-color: var(--vp-c-gutter)
-    --vp-code-line-height: 1.7
-    --vp-code-copy-code-border-color: var(--vp-c-divider)
-    --vp-code-copy-code-bg: var(--vp-c-bg-soft)
-    --vp-code-copy-code-hover-border-color: var(--vp-c-divider)
-    --vp-code-copy-code-hover-bg: var(--vp-c-bg)
-    --vp-footer-border-color: var(--vp-c-divider)
-    --vp-c-bg-footer: rgba(255, 255, 255, .08)
-    --vp-nav-bg: var(--vp-nav-bg-color)
+    --vp-nav-bg: rgba(10, 10, 10, .8)
     --vp-nav-border: var(--vp-c-divider)
     --vp-nav-title-color: var(--vp-c-text-1)
     --vp-nav-link-color: var(--vp-c-text-2)
     --vp-nav-link-hover-color: var(--vp-c-text-1)
+    --vp-button-brand-border: transparent
+    --vp-button-brand-text: #fff
+    --vp-button-brand-bg: var(--vp-c-brand-3)
+    --vp-button-brand-hover-border: transparent
+    --vp-button-brand-hover-text: #fff
+    --vp-button-brand-hover-bg: var(--vp-c-brand-2)
+    --vp-button-alt-border: transparent
+    --vp-button-alt-text: var(--vp-c-text-1)
+    --vp-button-alt-bg: rgba(255, 255, 255, .06)
+    --vp-button-alt-hover-border: transparent
+    --vp-button-alt-hover-text: var(--vp-c-text-1)
+    --vp-button-alt-hover-bg: rgba(255, 255, 255, .1)
+    --vp-code-font-size: .875em
+    --vp-code-color: var(--vp-c-brand-1)
+    --vp-code-bg: rgba(255, 255, 255, .06)
+    --vp-code-block-color: var(--vp-c-text-2)
+    --vp-code-block-bg: rgba(255, 255, 255, .04)
+    --vp-code-line-height: 1.7
     --vp-hero-padding-top: 96px
     --vp-hero-max-width: 1200px
     --vp-hero-heading-size: 3.2rem
@@ -282,15 +247,28 @@ style:
     --vp-docs-subheading-size: 1.25rem
     --vp-docs-text-color: var(--vp-c-text-2)
     --vp-docs-border-color: var(--vp-c-divider)
-    --vp-card-border-color: var(--vp-c-divider)
-    --vp-card-bg: var(--vp-c-bg-elv)
+    --vp-card-border-color: rgba(255, 255, 255, .08)
+    --vp-card-bg: rgba(255, 255, 255, .03)
     --vp-card-hover-border-color: var(--vp-c-brand-1)
     --vp-card-icon-size: 2rem
     --vp-card-title-size: 1.1rem
     --vp-card-desc-size: .9rem
     --vp-footer-text-color: var(--vp-c-text-3)
     --vp-footer-font-size: .875rem
-    --vp-card-hover: rgba(122, 173, 147, .08)
+    --vp-footer-border-color: var(--vp-c-divider)
+
+  @keyframes rotate-bg
+    0%
+      transform: rotate(0deg)
+    100%
+      transform: rotate(360deg)
+
+  .bg-gradient
+    position: fixed
+    inset: -50%
+    z-index: -1
+    background: conic-gradient(from 0deg at 50% 50%, #0a0a0a 0%, #111 25%, #0a0a0a 50%, #0e0e0e 75%, #0a0a0a 100%)
+    animation: rotate-bg 30s linear infinite
 
   *
     margin: 0
@@ -426,15 +404,30 @@ style:
     gap: var(--vp-features-gap)
 
   .feature-card
-    background-color: var(--vp-card-bg)
+    background: var(--vp-card-bg)
     border: 1px solid var(--vp-card-border-color)
     border-radius: 12px
     padding: 28px 24px
-    transition: border-color .3s ease
+    transition: border-color .3s ease, box-shadow .3s ease
     position: relative
     overflow: hidden
     &:hover
       border-color: var(--vp-card-hover-border-color)
+      box-shadow: 0 0 30px rgba(255, 255, 255, .03)
+    &::before
+      content: ''
+      position: absolute
+      top: 0
+      left: 0
+      right: 0
+      bottom: 0
+      border-radius: inherit
+      opacity: 0
+      transition: opacity .3s ease
+      background: radial-gradient(400px circle at var(--mx, 50%) var(--my, 50%), rgba(255, 255, 255, .06), transparent 60%)
+      pointer-events: none
+    &:hover::before
+      opacity: 1
 
   .feature-card .icon
     font-size: var(--vp-card-icon-size)
@@ -489,6 +482,16 @@ style:
   .docs-section ul li
     margin-bottom: 4px
 
+  // --- Collapsible docs content ---
+  .docs-content.collapsible
+    max-height: 0
+    overflow: hidden
+    opacity: 0
+    transition: max-height .6s cubic-bezier(.4, 0, .2, 1), opacity .4s ease
+    &.visible
+      max-height: 2000px
+      opacity: 1
+
   // --- Inline code ---
   code
     background-color: var(--vp-code-bg)
@@ -509,6 +512,7 @@ style:
     font-family: var(--vp-font-family-mono)
     font-size: .85rem
     line-height: var(--vp-code-line-height)
+    border: 1px solid var(--vp-c-divider)
 
   .code-block code
     background: none
@@ -532,7 +536,7 @@ style:
   .api-table th
     color: var(--vp-c-text-1)
     font-weight: 600
-    background-color: var(--vp-c-bg-soft)
+    background-color: rgba(255, 255, 255, .03)
 
   .api-table td
     color: var(--vp-c-text-2)

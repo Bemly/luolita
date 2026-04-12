@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Luolita (萝莉塔)** is a Vue-like Single-File Component (SFC) generator. It parses `.luoli` files containing three section types (delimited by `coffee:`, `template:` and `style:` markers) and compiles them into standard JS, HTML, and CSS using CoffeeScript, Pug, and a lightweight in-browser Stylus compiler respectively.
 
-Version: 0.1.4 | License: WTFPL
+Version: 0.1.5 | License: WTFPL
 
 ## Commands
 
