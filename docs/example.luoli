@@ -1,11 +1,10 @@
 coffee:
   title = Luolita
   githubUrl = 'https://github.com/bemly/luolita'
-  f1Title = CoffeeScript
-  f2Title = Pug
-  f3Title = Stylus
+  f1Title = 'CoffeeScript'
+  f2Title = 'Pug'
+  f3Title = 'Stylus'
 
-  installCmd = 
   cliExample = 'pnpm exec coffee luolita.coffee src/app.luoli -o dist/ -n app'
   browserExample = '&lt;script src=&quot;luolita.browser.bundle.js&quot;&gt;&lt;/script&gt;\n&lt;script&gt;\n Luolita.renderToDOM(source, \&#39;#app\&#39;)\n&lt;/script&gt;'
 
@@ -34,144 +33,135 @@ coffee:
   '''
 
 template:
-  html(lang="zh-CN")
-    head
-      meta(charset="UTF-8")
-      meta(name="viewport", content="width=device-width, initial-scale=1.0")
-      title= title
-      link(rel="preconnect", href="https://fonts.googleapis.com")
-      link(rel="preconnect", href="https://fonts.gstatic.com", crossorigin)
-      link(href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap", rel="stylesheet")
+  div.page
+    .bg-gradient
+    nav.nav
+      .nav-inner
+        .nav-title= title
+        .nav-links
+          .nav-link(onclick="document.querySelector('.docs').scrollIntoView({behavior:'smooth'})") 使用指南
+          a.nav-link(href=githubUrl, target="_blank", rel="noopener") GitHub
 
-    body
-      .bg-gradient
-      nav.nav
-        .nav-inner
-          .nav-title= title
-          .nav-links
-            .nav-link(onclick="document.querySelector('.docs').scrollIntoView({behavior:'smooth'})") 使用指南
-            a.nav-link(href=githubUrl, target="_blank", rel="noopener") GitHub
+    section.hero
+      h1= title
+      p.tagline= '类似 Vue 的单文件组件生成器'
+      p.desc= '将 .luoli 文件解析为三种语法糖：CoffeeScript、Pug 和 Stylus，分别编译为标准的 JavaScript、HTML 和 CSS。'
+      .hero-actions
+        .btn.btn-brand(onclick="document.querySelector('.docs').scrollIntoView({behavior:'smooth'})") 快速开始
+        a.btn.btn-alt(href=githubUrl, target="_blank", rel="noopener") GitHub 仓库
 
-      section.hero
-        h1= title
-        p.tagline= '类似 Vue 的单文件组件生成器'
-        p.desc= '将 .luoli 文件解析为三种语法糖：CoffeeScript、Pug 和 Stylus，分别编译为标准的 JavaScript、HTML 和 CSS。'
-        .hero-actions
-          .btn.btn-brand(onclick="document.querySelector('.docs').scrollIntoView({behavior:'smooth'})") 快速开始
-          a.btn.btn-alt(href=githubUrl, target="_blank", rel="noopener") GitHub 仓库
+    section.features
+      .feature-card
+        .icon!= '&#9749;'
+        h3= f1Title
+        p= 'CoffeeScript 编译为 JavaScript，自带源码映射，简洁优雅的语法输出。'
+      .feature-card
+        .icon!= '&#128054;'
+        h3= f2Title
+        p= 'Pug 模板编译为 HTML，CoffeeScript 变量自动桥接为模板 locals。'
+      .feature-card
+        .icon!= '&#127912;'
+        h3= f3Title
+        p= 'Stylus 编译为 CSS，支持嵌套、变量、混合等高级特性。'
 
-      section.features
-        .feature-card
-          .icon!= '&#9749;'
-          h3= f1Title
-          p= 'CoffeeScript 编译为 JavaScript，自带源码映射，简洁优雅的语法输出。'
-        .feature-card
-          .icon!= '&#128054;'
-          h3= f2Title
-          p= 'Pug 模板编译为 HTML，CoffeeScript 变量自动桥接为模板 locals。'
-        .feature-card
-          .icon!= '&#127912;'
-          h3= f3Title
-          p= 'Stylus 编译为 CSS，支持嵌套、变量、混合等高级特性。'
+    section.docs
+      .docs-section
+        h2 什么是 Luolita？
+        p Luolita（萝莉塔）是一个类似 Vue 的单文件组件生成器。它将 <code>.luoli</code> 文件中的三种语法分别编译为标准的 JavaScript、HTML 和 CSS：
+        ul
+          li <code>coffee:</code> &mdash; CoffeeScript &rarr; JavaScript（含 source map）
+          li <code>template:</code> &mdash; Pug 模板 &rarr; HTML（变量自动桥接）
+          li <code>style:</code> &mdash; Stylus &rarr; CSS
+        p 支持 Node.js 命令行和浏览器两种运行方式。
 
-      section.docs
-        .docs-section
-          h2 什么是 Luolita？
-          p Luolita（萝莉塔）是一个类似 Vue 的单文件组件生成器。它将 <code>.luoli</code> 文件中的三种语法分别编译为标准的 JavaScript、HTML 和 CSS：
-          ul
-            li <code>coffee:</code> &mdash; CoffeeScript &rarr; JavaScript（含 source map）
-            li <code>template:</code> &mdash; Pug 模板 &rarr; HTML（变量自动桥接）
-            li <code>style:</code> &mdash; Stylus &rarr; CSS
-          p 支持 Node.js 命令行和浏览器两种运行方式。
+      .docs-section
+        h2 Node.js 使用
+        h3 安装
+        .code-block
+          code!= '$ pnpm add luolita\n# 或\n$ npm install luolita'
+        h3 命令行
+        .code-block
+          code!= cliExample
+        h3 选项
+        table.api-table
+          thead
+            tr
+              th 选项
+              th 说明
+          tbody
+            tr
+              td <code>-o, --output</code>
+              td 输出目录（默认 <code>temp/</code>）
+            tr
+              td <code>-n, --name</code>
+              td 输出文件前缀
+            tr
+              td <code>-q, --quiet</code>
+              td 关闭调试输出
+            tr
+              td <code>-h, --help</code>
+              td 显示帮助信息
+        h3 输出文件
+        p 编译后生成三个文件：
+        ul
+          li <code>&lt;name&gt;.js</code> &mdash; JavaScript（含 source map）
+          li <code>&lt;name&gt;.html</code> &mdash; HTML 模板
+          li <code>&lt;name&gt;.css</code> &mdash; CSS 样式
 
-        .docs-section
-          h2 Node.js 使用
-          h3 安装
-          .code-block
-            code!= '$ pnpm add luolita\n# 或\n$ npm install luolita'
-          h3 命令行
-          .code-block
-            code!= cliExample
-          h3 选项
-          table.api-table
-            thead
-              tr
-                th 选项
-                th 说明
-            tbody
-              tr
-                td <code>-o, --output</code>
-                td 输出目录（默认 <code>temp/</code>）
-              tr
-                td <code>-n, --name</code>
-                td 输出文件前缀
-              tr
-                td <code>-q, --quiet</code>
-                td 关闭调试输出
-              tr
-                td <code>-h, --help</code>
-                td 显示帮助信息
-          h3 输出文件
-          p 编译后生成三个文件：
-          ul
-            li <code>&lt;name&gt;.js</code> &mdash; JavaScript（含 source map）
-            li <code>&lt;name&gt;.html</code> &mdash; HTML 模板
-            li <code>&lt;name&gt;.css</code> &mdash; CSS 样式
+      .docs-section
+        h2 浏览器使用
+        .code-block
+          code!= browserExample
+        p 浏览器 bundle 已内置 CoffeeScript、Pug、Stylus 运行时，零外部依赖，一个 <code>&lt;script&gt;</code> 标签即可使用。
+        h3 API
+        table.api-table
+          thead
+            tr
+              th 方法
+              th 说明
+          tbody
+            tr
+              td <code>Luolita.compile(text, opts)</code>
+              td 编译 .luoli 文本，返回 Promise
+            tr
+              td <code>Luolita.renderToDOM(text, target)</code>
+              td 编译并渲染到 DOM 元素
 
-        .docs-section
-          h2 浏览器使用
-          .code-block
-            code!= browserExample
-          p 浏览器 bundle 已内置 CoffeeScript、Pug、Stylus 运行时，零外部依赖，一个 <code>&lt;script&gt;</code> 标签即可使用。
-          h3 API
-          table.api-table
-            thead
-              tr
-                th 方法
-                th 说明
-            tbody
-              tr
-                td <code>Luolita.compile(text, opts)</code>
-                td 编译 .luoli 文本，返回 Promise
-              tr
-                td <code>Luolita.renderToDOM(text, target)</code>
-                td 编译并渲染到 DOM 元素
+      .docs-section
+        h2 .luoli 文件格式
+        .code-block
+          code!= coffeeSrc
+        p 三个标记段均可选，省略某段则编译器输出空字符串。公共前导缩进会被自动去除。
 
-        .docs-section
-          h2 .luoli 文件格式
-          .code-block
-            code!= coffeeSrc
-          p 三个标记段均可选，省略某段则编译器输出空字符串。公共前导缩进会被自动去除。
+      .docs-section
+        h2 API 参考
+        table.api-table
+          thead
+            tr
+              th 方法
+              th 参数
+              th 返回
+          tbody
+            tr
+              td <code>compile(text, opts)</code>
+              td <code>text</code> 为 .luoli 内容，<code>opts</code> 含 <code>outputName</code>、<code>debug</code>
+              td <code>Promise&#123; coffee: &#123;js, map&#125;, template, style &#125;</code>
+            tr
+              td <code>renderToDOM(text, target, opts)</code>
+              td <code>target</code> 为 CSS 选择器或 DOM 元素
+              td 将结果注入到页面
 
-        .docs-section
-          h2 API 参考
-          table.api-table
-            thead
-              tr
-                th 方法
-                th 参数
-                th 返回
-            tbody
-              tr
-                td <code>compile(text, opts)</code>
-                td <code>text</code> 为 .luoli 内容，<code>opts</code> 含 <code>outputName</code>、<code>debug</code>
-                td <code>Promise&#123; coffee: &#123;js, map&#125;, template, style &#125;</code>
-              tr
-                td <code>renderToDOM(text, target, opts)</code>
-                td <code>target</code> 为 CSS 选择器或 DOM 元素
-                td 将结果注入到页面
+    footer.footer
+      p Copyright &copy; Bemly_ &middot; WTFPL License
 
-      footer.footer
-        p Copyright &copy; Bemly_ &middot; WTFPL License
-
-      script.
-        document.querySelectorAll('.feature-card').forEach(function(card) {
-          card.addEventListener('mousemove', function(e) {
-            var r = card.getBoundingClientRect()
-            card.style.setProperty('--mx', (e.clientX - r.left) + 'px')
-            card.style.setProperty('--my', (e.clientY - r.top) + 'px')
-          })
+    script.
+      document.querySelectorAll('.feature-card').forEach(function(card) {
+        card.addEventListener('mousemove', function(e) {
+          var r = card.getBoundingClientRect()
+          card.style.setProperty('--mx', (e.clientX - r.left) + 'px')
+          card.style.setProperty('--my', (e.clientY - r.top) + 'px')
         })
+      })
 
 style:
   :root
@@ -205,7 +195,7 @@ style:
     padding: 0
     box-sizing: border-box
 
-  body
+  .page
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif
     background: var(--vp-c-bg)
     color: var(--vp-c-text-1)
