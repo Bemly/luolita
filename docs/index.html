@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Luolita</title>
-  <script src="dist/luolita.browser.bundle.js"></script>
+  <script src="../dist/luolita.browser.bundle.js"></script>
 </head>
 <body>
   <div id="app"></div>
 
   <script>
-    fetch('example.luoli')
+    fetch('../example.luoli')
       .then(function (res) { return res.text() })
       .then(function (text) {
         Luolita.renderToDOM(text, '#app', { outputName: 'example' })
