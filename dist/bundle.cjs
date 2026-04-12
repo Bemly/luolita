@@ -20,9 +20,14 @@ esbuild.build({
   const pugRuntimeStub = '{}';
 
   // Replace require calls in the bundle
-  // esbuild minified output uses require("fs") or require('fs')
+  // esbuild minified output uses nt("fs") where nt is the internal require shim
+  // We need to replace both require("fs") and nt("fs") patterns
+  code = code.replace(/nt\("fs"\)/g, fsStub);
+  code = code.replace(/nt\('fs'\)/g, fsStub);
   code = code.replace(/require\("fs"\)/g, fsStub);
   code = code.replace(/require\('fs'\)/g, fsStub);
+  code = code.replace(/nt\("pug-runtime"\)/g, pugRuntimeStub);
+  code = code.replace(/nt\('pug-runtime'\)/g, pugRuntimeStub);
   code = code.replace(/require\("pug-runtime"\)/g, pugRuntimeStub);
   code = code.replace(/require\('pug-runtime'\)/g, pugRuntimeStub);
 
