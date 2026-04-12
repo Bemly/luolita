@@ -40,6 +40,18 @@ coffee:
         margin: 0 0.5rem
   '''
 
+  window.revealDocs = ->
+    section = document.querySelector 'section.docs.collapsible'
+    if section
+      section.classList.add 'visible'
+      section.scrollIntoView behavior: 'smooth'
+
+  Array.from(document.querySelectorAll '.feature-card').forEach (card) ->
+    card.addEventListener 'mousemove', (e) ->
+      r = card.getBoundingClientRect()
+      card.style.setProperty '--mx', (e.clientX - r.left) + 'px'
+      card.style.setProperty '--my', (e.clientY - r.top) + 'px'
+
 template:
   div.page
     .bg-gradient
@@ -164,22 +176,6 @@ template:
 
     footer.footer
       p Copyright &copy; Bemly_ &middot; WTFPL License
-
-    script.
-      function revealDocs() {
-        var section = document.querySelector('section.docs.collapsible')
-        if (section) {
-          section.classList.add('visible')
-          section.scrollIntoView({ behavior: 'smooth' })
-        }
-      }
-      document.querySelectorAll('.feature-card').forEach(function(card) {
-        card.addEventListener('mousemove', function(e) {
-          var r = card.getBoundingClientRect()
-          card.style.setProperty('--mx', (e.clientX - r.left) + 'px')
-          card.style.setProperty('--my', (e.clientY - r.top) + 'px')
-        })
-      })
 
 style:
   :root
