@@ -30,6 +30,34 @@ pnpm exec coffee luolita.coffee src/app.luoli -o dist -n app
 pnpm exec coffee luolita.coffee --help
 ```
 
+## 浏览器使用 Browser
+
+在网页中直接加载 `.luoli` 文件并编译，无需服务器：
+
+```html
+<!-- 按顺序加载依赖 -->
+<script src="https://cdn.jsdelivr.net/npm/coffeescript@2/dist/coffeescript.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pug@3/pug.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stylus@0/dist/stylus.min.js"></script>
+<script src="luolita.browser.js"></script>
+
+<script>
+  // 从 .luoli 文件或 <textarea>/<pre> 中获取源码
+  var src = 'coffee:\n  msg = "Hello"\ntemplate:\n  h1= msg\nstyle:\n  h1\n    color: red\n'
+
+  // 编译并渲染到页面
+  Luolita.renderToDOM(src, '#app', { outputName: 'myapp' })
+</script>
+```
+
+`Luolita` API：
+- `Luolita.compile(text, opts)` — 编译 `.luoli` 源码，返回 `Promise<{coffee, template, style}>`
+- `Luolita.renderToDOM(text, target, opts)` — 编译并渲染到 DOM 元素
+- `opts.outputName` — 输出文件名前缀（模板中可用 `name` 变量引用资源路径）
+- `opts.debug` — 是否打印调试日志（默认 `true`）
+
+示例：打开 `example/browser.html` 即可在浏览器中查看完整效果。
+
 ## 执行代码 Code
 
 本 **代码段** 由 文学咖啡脚本 构建\
@@ -204,6 +232,7 @@ Coffee 段中定义的变量（如 `title`、`message`、`count`）会自动桥�
 ## 更新内容 CHANGELOG.md
 
 ### [0.1.4] - 2026-04-12
+- 浏览器版本：luolita.browser.js，网页中直接编译 .luoli 文件
 - 实现 sfc_var_bridge：coffee 段变量自动桥接到 template 和 style
 - 实现 CLI 参数：-o/--output、-n/--name、-q/--quiet、-h/--help
 - 实现 dedent：自动去除 section 内容公共缩进
