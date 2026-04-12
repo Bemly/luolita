@@ -13,8 +13,22 @@ A like-vue Single-File Components generator that parses HTML+CSS+JS\
 2. npm >= 10
 3. pnpm >= 9 (Optional, Recommended, .json5 support)
 
-然后在项目根目录下执行以下命令推拉取依赖\
-TODO: 之后写
+然后在项目根目录下执行以下命令安装依赖：
+```bash
+pnpm install
+```
+
+使用：
+```bash
+# 使用默认输入 temp/test.luoli
+pnpm test
+
+# 指定输入文件和输出目录
+pnpm exec coffee luolita.coffee src/app.luoli -o dist -n app
+
+# 查看帮助
+pnpm exec coffee luolita.coffee --help
+```
 
 ## 执行代码 Code
 
@@ -29,63 +43,124 @@ This is ESM module support.
   import * as cfs from "coffeescript"
   import * as pug from "pug"
   import sty from "stylus"
-  
+  import { readFileSync, createReadStream, writeFileSync, mkdirSync, existsSync } from "fs"
+  import { resolve, basename, extname } from "path"
+  import JSON from 'json5'
+  import readline from "readline"
 
-  PATH = "temp/test.luoli"
   NAME = "[luolita]"
   ENCODING = "utf-8"
   COFFEE_OPTIONS =
-    bare: true,
-    header: false,
-    sourceMap: true,
-    inlineMap: true,
+    bare: true
+    header: false
+    sourceMap: true
+    inlineMap: true
 
-  console.log "#{ NAME } use ES Modules loader."
-  console.log "#{ NAME } CoffeeScript ver: #{ cfs.VERSION }"
-
-  import { readFileSync, createReadStream, writeFileSync } from "fs"
-  import JSON from 'json5'
-  import readline from "readline"
-  
   DEBUG = true
 
-  { config: CONFIG } = JSON.parse readFileSync "package.json5", "utf-8"
-  
-  file = readline.createInterface 
+  # Load config if available
+  CONFIG = {}
+  try
+    { config: CONFIG } = JSON.parse readFileSync "package.json5", "utf-8"
+  catch
+    # No config, use defaults
+
+  # Resolve paths
+  PATH = resolve process.argv[2] or "temp/test.luoli"
+  OUTPUT_DIR = resolve "temp"
+  OUTPUT_NAME = basename PATH, extname PATH
+
+  mkdirSync OUTPUT_DIR, recursive: true unless existsSync OUTPUT_DIR
+
+  if DEBUG
+    console.log "#{ NAME } use ES Modules loader."
+    console.log "#{ NAME } CoffeeScript ver: #{ cfs.VERSION }"
+    console.log "#{ NAME } Reading file: #{ PATH }"
+
+  file = readline.createInterface
     input: createReadStream PATH, encoding: ENCODING
-  if DEBUG then console.log "#{ NAME } Reading file: #{ PATH }"
-  
+
   # 0: coffeescript, 1: pug, 2: stylus
 
   file_segments = {}
   file_segment_status = ""
   output_segments = {}
-  sfc_var_bridge = ->
-  output2file = (json) -> 
-    writeFileSync "temp/test.css", json.style
-    writeFileSync "temp/test.js", json.coffee.js
-    writeFileSync "temp/test.html", json.template
-    
-  file.on "line", (line) -> 
+
+  sfc_var_bridge = (coffee_src) ->
+    vars = {}
+    lines = coffee_src.split "\n"
+    for line in lines
+      match = line.match /^\s*([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=\s*(.+)$/
+      if match
+        try
+          result = cfs.eval match[2], bare: true
+          vars[match[1]] = result
+        catch
+          vars[match[1]] = match[2].trim()
+    vars
+
+  dedent = (text) ->
+    lines = text.split '\n'
+    nonEmpty = lines.filter (l) -> l.trim().length > 0
+    return text if nonEmpty.length is 0
+    minIndent = Math.min ...nonEmpty.map (l) ->
+      match = l.match /^(\s*)/
+      if match then match[1].length else 0
+    if minIndent > 0
+      lines.map((l) -> if l.length >= minIndent then l.substring(minIndent) else l.trimStart()).join '\n'
+    else
+      text
+
+  output2file = (json, dir, name) ->
+    writeFileSync "#{ dir }/#{ name }.css", json.style
+    writeFileSync "#{ dir }/#{ name }.js", json.coffee.js
+    writeFileSync "#{ dir }/#{ name }.html", json.template
+
+  file.on "line", (line) ->
     if DEBUG then console.log "#{ NAME } #{ PATH }> #{ line }"
     switch line.trimEnd()
       when "coffee:" then file_segment_status = "coffee"
       when "template:" then file_segment_status = "template"
       when "style:" then file_segment_status = "style"
       else
-        file_segments[file_segment_status] ?= ""
-        file_segments[file_segment_status] += line + '\n'
-  
+        if file_segment_status
+          file_segments[file_segment_status] ?= ""
+          file_segments[file_segment_status] += line + '\n'
+
   file.on "close", ->
     if DEBUG then console.log "#{ NAME } Close file: #{ PATH }"
-    sfc_var_bridge()
-    output_segments.coffee = cfs.compile file_segments.coffee, COFFEE_OPTIONS
-    output_segments.template = pug.render file_segments.template
-    output_segments.style = await sty file_segments.style
-      .render()
+
+    unless file_segment_status or Object.keys(file_segments).length > 0
+      console.error "#{ NAME } Error: no sections found in #{ PATH }"
+      process.exit 1
+
+    try
+      if file_segments.coffee?
+        coffee_src = dedent file_segments.coffee
+        bridge_vars = sfc_var_bridge coffee_src
+        bridge_vars.name = OUTPUT_NAME
+        output_segments.coffee = cfs.compile coffee_src, COFFEE_OPTIONS
+      else
+        bridge_vars = {}
+        output_segments.coffee = js: ""
+
+      if file_segments.template?
+        output_segments.template = pug.render dedent(file_segments.template), bridge_vars
+      else
+        output_segments.template = ""
+
+      if file_segments.style?
+        output_segments.style = sty(dedent(file_segments.style), { define: { "bridge_vars": bridge_vars } }).render()
+      else
+        output_segments.style = ""
+    catch err
+      console.error "#{ NAME } Compilation error: #{ err.message }"
+      process.exit 1
+
     if DEBUG then console.log output_segments
-    output2file output_segments
-    export default output_segments
+    output2file output_segments, OUTPUT_DIR, OUTPUT_NAME
+
+  export default output_segments
 
 ```
 
@@ -110,4 +185,3 @@ WTFPL - Do What The F*ck You Want To Public License
 [
     ![WTFPL](http://www.wtfpl.net/wp-content/uploads/2012/12/wtfpl-badge-1.png)
 ](http://www.wtfpl.net/)
-

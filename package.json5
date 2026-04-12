@@ -10,16 +10,14 @@
   description: 'A like-vue Single-File Components generator that parses HTML+CSS+JS ".luoli" into 3-Syntactic sugar: coffeescript, pug, and stylus. ',
   scripts: {
     // 把 README.md 编译为 luolita.mjs，适配 ESM 模式
-    // pnpm start => alias: pnpm run start，顺便试一下config 是真的难用 确信
-    start: 'ver && echo %npm_package_config_Windows% || echo $npm_package_config_Posix',
-    test: './luolita.coffee',
-    prebuild: 'coffee -bl -o temp/index.mjs -c README.md',
-    build: 'coffee -bl -o luolita.mjs -c README.md',
-    readme: 'coffee -bl -o luolita.mjs -c README.md && node luolita.mjs',
-    // 释放 package.json5，还原配置文件数据，编译 ".litcoffee"
-    preinstall: 'coffee --bare --no-header --literate --output luolita.mjs --compile README.md       && mv package.bemly.json5 package.json5',
-    // pnpm 发布的时候强制无法上传 package.json5，改成 package.bemly.json 规避
-    prepack: 'cp package.json5 package.bemly.json5',
+    start: 'echo "[luolita] run ./luolita.coffee -h for usage"',
+    test: 'pnpm exec coffee luolita.coffee',
+    build: 'coffee -bl -c README.md && mv README.js luolita.mjs',
+    readme: 'coffee -bl -c README.md && mv README.js luolita.mjs && node luolita.mjs',
+    // 本地开发时构建 luolita.mjs（不影响 publish 流程）
+    prepare: 'coffee -bl -c README.md && mv README.js luolita.mjs || true',
+    // 清理生成的文件
+    clean: 'rm -rf luolita.mjs temp/',
   },
   keywords: [
     'coffeescript',
