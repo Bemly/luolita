@@ -53,15 +53,23 @@ esbuild.build({
     'domain': '{create:function(){return{on:function(){},enter:function(){},exit:function(){},run:function(fn){fn()}}},active:null}',
   };
 
-  // Replace all nt("module") and require("module") calls with stubs
+  // Detect the minified require function name from the IIFE body
+  // esbuild uses: var ot=(r=>typeof require<"u"?require:...)
+  const requireFnMatch = code.match(/var\s+([a-zA-Z_$][a-zA-Z0-9_$]*)=\(r=>typeof require<"u"\?require/);
+  const requireFn = requireFnMatch ? requireFnMatch[1] : null;
+  console.log('Minified require function name:', requireFn);
+
+  // Replace all require calls with stubs
   for (var mod in stubs) {
     var stub = stubs[mod];
-    var re1 = new RegExp('nt\\("' + mod + '"\\)', 'g');
-    var re2 = new RegExp("nt\\('" + mod + "'\\)", 'g');
+    // Replace the minified require function calls: ot("module")
+    if (requireFn) {
+      code = code.replace(new RegExp(requireFn.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\("' + mod + '"\\)', 'g'), stub);
+      code = code.replace(new RegExp(requireFn.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + "\\('" + mod + "'\\)", 'g'), stub);
+    }
+    // Also catch raw require calls
     var re3 = new RegExp('require\\("' + mod + '"\\)', 'g');
     var re4 = new RegExp("require\\('" + mod + "'\\)", 'g');
-    code = code.replace(re1, stub);
-    code = code.replace(re2, stub);
     code = code.replace(re3, stub);
     code = code.replace(re4, stub);
   }
