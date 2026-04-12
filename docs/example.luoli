@@ -6,7 +6,7 @@ coffee:
   f3Title = 'Stylus'
 
   cliExample = 'pnpm exec coffee luolita.coffee src/app.luoli -o dist/ -n app'
-  browserExample = '&lt;script src=&quot;luolita.browser.bundle.js&quot;&gt;&lt;/script&gt;\n&lt;script&gt;\n Luolita.renderToDOM(source, \&#39;#app\&#39;)\n&lt;/script&gt;'
+  browserExample = '&lt;link rel=&quot;luolita&quot; href=&quot;app.luoli&quot;&gt;\n&lt;script src=&quot;luolita.browser.bundle.js&quot;&gt;&lt;/script&gt;\n\n&lt;!-- 或使用 JS API --&gt;\n&lt;script&gt;\n Luolita.renderToDOM(source, \&#39;#app\&#39;)\n&lt;/script&gt;'
 
   coffeeSrc = '''
     # luoli 文件格式示例
@@ -44,8 +44,8 @@ template:
 
     section.hero
       h1= title
-      p.tagline= '类似 Vue 的单文件组件生成器'
-      p.desc= '将 .luoli 文件解析为三种语法糖：CoffeeScript、Pug 和 Stylus，分别编译为标准的 JavaScript、HTML 和 CSS。'
+      p.tagline= '类似 Vue 的单文件组件生成器，零运行时依赖'
+      p.desc= '将 .luoli 文件解析为三种语法糖：CoffeeScript、Pug 和 Stylus，分别编译为标准的 JavaScript、HTML 和 CSS。纯浏览器端编译，一个 &lt;script&gt; 标签即可使用。'
       .hero-actions
         .btn.btn-brand(onclick="document.querySelector('.docs').scrollIntoView({behavior:'smooth'})") 快速开始
         a.btn.btn-alt(href=githubUrl, target="_blank", rel="noopener") GitHub 仓库
@@ -112,7 +112,7 @@ template:
         h2 浏览器使用
         .code-block
           code!= browserExample
-        p 浏览器 bundle 已内置 CoffeeScript、Pug、Stylus 运行时，零外部依赖，一个 <code>&lt;script&gt;</code> 标签即可使用。
+        p 浏览器 bundle 已内置 CoffeeScript、Pug、Stylus 运行时，零外部依赖。使用 <code>&lt;link rel=&quot;luolita&quot; href=&quot;...&quot;&gt;</code> 声明式加载，页面打开即渲染。
         h3 API
         table.api-table
           thead
@@ -165,30 +165,121 @@ template:
 
 style:
   :root
-    --vp-c-bg: #0a0a0c
-    --vp-c-bg-alt: #060608
-    --vp-c-bg-soft: rgba(255, 255, 255, 0.04)
-    --vp-c-divider: #1a1a1f
-    --vp-c-text-1: #e4e4e8
-    --vp-c-text-2: #8a8a93
-    --vp-c-text-3: #606067
-    --vp-c-brand: #7aadad
-    --vp-c-brand-light: #8fc0b3
-    --vp-c-brand-dark: #5a8a7e
-    --vp-c-brand-text: #ffffff
-    --vp-code-bg: rgba(255, 255, 255, 0.08)
-    --vp-code-text: #f7768e
-    --vp-code-block-bg: #111116
-    --vp-code-block-text: #abb2bf
-    --vp-c-button-brand: #5a8a7e
-    --vp-c-button-brand-hover: #6b9f93
-    --vp-c-button-alt: rgba(255, 255, 255, 0.08)
-    --vp-c-button-alt-hover: rgba(255, 255, 255, 0.14)
-    --vp-c-button-alt-text: #e4e4e8
+    --vp-c-white: #ffffff
+    --vp-c-black: #000000
+    --vp-c-gray-1: #dddde3
+    --vp-c-gray-2: #e4e4e9
+    --vp-c-gray-3: #ebebef
+    --vp-c-gray-soft: rgba(142, 150, 170, .14)
+    --vp-c-indigo-1: #3451b2
+    --vp-c-indigo-2: #3a5ccc
+    --vp-c-indigo-3: #5672cd
+    --vp-c-indigo-soft: rgba(100, 108, 255, .14)
+    --vp-c-green-1: #18794e
+    --vp-c-green-2: #299764
+    --vp-c-green-3: #30a46c
+    --vp-c-green-soft: rgba(16, 185, 129, .14)
+    --vp-c-yellow-1: #915930
+    --vp-c-yellow-2: #946300
+    --vp-c-yellow-3: #9f6a00
+    --vp-c-yellow-soft: rgba(234, 179, 8, .14)
+    --vp-c-red-1: #b8272c
+    --vp-c-red-2: #d5393e
+    --vp-c-red-3: #e0575b
+    --vp-c-red-soft: rgba(244, 63, 94, .14)
+    --vp-c-sponsor: #db2777
+    --vp-c-bg: #ffffff
+    --vp-c-bg-alt: #f6f6f7
+    --vp-c-bg-elv: #ffffff
+    --vp-c-bg-soft: #f6f6f7
+    --vp-c-border: #c2c2c4
+    --vp-c-divider: #e2e2e3
+    --vp-c-gutter: #e2e2e3
+    --vp-c-text-1: #3c3c43
+    --vp-c-text-2: #67676c
+    --vp-c-text-3: #929295
+    --vp-c-default-1: var(--vp-c-gray-1)
+    --vp-c-default-2: var(--vp-c-gray-2)
+    --vp-c-default-3: var(--vp-c-gray-3)
+    --vp-c-default-soft: var(--vp-c-gray-soft)
+    --vp-c-brand-1: #6b9f93
+    --vp-c-brand-2: #5a8a7e
+    --vp-c-brand-3: #7aadad
+    --vp-c-brand-soft: rgba(122, 173, 147, .14)
+    --vp-c-brand: var(--vp-c-brand-1)
+    --vp-c-tip-1: var(--vp-c-brand-1)
+    --vp-c-tip-soft: var(--vp-c-brand-soft)
+    --vp-c-warning-1: var(--vp-c-yellow-1)
+    --vp-c-warning-soft: var(--vp-c-yellow-soft)
+    --vp-c-danger-1: var(--vp-c-red-1)
+    --vp-c-danger-soft: var(--vp-c-red-soft)
+    --vp-font-family-base: "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji"
+    --vp-font-family-mono: ui-monospace, "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", monospace
+    --vp-shadow-2: 0 3px 12px rgba(0, 0, 0, .07), 0 1px 4px rgba(0, 0, 0, .07)
+    --vp-shadow-3: 0 12px 32px rgba(0, 0, 0, .1), 0 2px 6px rgba(0, 0, 0, .08)
+    --vp-layout-max-width: 1440px
     --vp-nav-height: 64px
-    --vp-nav-bg: rgba(10, 10, 12, 0.8)
-    --vp-footer-text: #505058
-    --vp-card-hover: rgba(255, 255, 255, 0.12)
+    --vp-nav-bg-color: rgba(255, 255, 255, .8)
+    --vp-home-hero-name-color: var(--vp-c-brand-1)
+    --vp-home-hero-name-background: transparent
+    --vp-button-brand-border: transparent
+    --vp-button-brand-text: var(--vp-c-white)
+    --vp-button-brand-bg: var(--vp-c-brand-3)
+    --vp-button-brand-hover-border: transparent
+    --vp-button-brand-hover-text: var(--vp-c-white)
+    --vp-button-brand-hover-bg: var(--vp-c-brand-2)
+    --vp-button-brand-active-border: transparent
+    --vp-button-brand-active-text: var(--vp-c-white)
+    --vp-button-brand-active-bg: var(--vp-c-brand-1)
+    --vp-button-alt-border: transparent
+    --vp-button-alt-text: var(--vp-c-text-1)
+    --vp-button-alt-bg: var(--vp-c-default-3)
+    --vp-button-alt-hover-border: transparent
+    --vp-button-alt-hover-text: var(--vp-c-text-1)
+    --vp-button-alt-hover-bg: var(--vp-c-default-2)
+    --vp-button-alt-active-border: transparent
+    --vp-button-alt-active-text: var(--vp-c-text-1)
+    --vp-button-alt-active-bg: var(--vp-c-default-1)
+    --vp-code-font-size: .875em
+    --vp-code-color: var(--vp-c-brand-1)
+    --vp-code-bg: var(--vp-c-default-soft)
+    --vp-code-block-color: var(--vp-c-text-2)
+    --vp-code-block-bg: var(--vp-c-bg-alt)
+    --vp-code-block-divider-color: var(--vp-c-gutter)
+    --vp-code-line-height: 1.7
+    --vp-code-copy-code-border-color: var(--vp-c-divider)
+    --vp-code-copy-code-bg: var(--vp-c-bg-soft)
+    --vp-code-copy-code-hover-border-color: var(--vp-c-divider)
+    --vp-code-copy-code-hover-bg: var(--vp-c-bg)
+    --vp-footer-border-color: var(--vp-c-divider)
+    --vp-c-bg-footer: rgba(255, 255, 255, .08)
+    --vp-nav-bg: var(--vp-nav-bg-color)
+    --vp-nav-border: var(--vp-c-divider)
+    --vp-nav-title-color: var(--vp-c-text-1)
+    --vp-nav-link-color: var(--vp-c-text-2)
+    --vp-nav-link-hover-color: var(--vp-c-text-1)
+    --vp-hero-padding-top: 96px
+    --vp-hero-max-width: 1200px
+    --vp-hero-heading-size: 3.2rem
+    --vp-hero-tagline-size: 1.3rem
+    --vp-hero-desc-size: 1rem
+    --vp-hero-actions-gap: 16px
+    --vp-features-gap: 24px
+    --vp-docs-max-width: 800px
+    --vp-docs-section-gap: 48px
+    --vp-docs-heading-size: 1.75rem
+    --vp-docs-subheading-size: 1.25rem
+    --vp-docs-text-color: var(--vp-c-text-2)
+    --vp-docs-border-color: var(--vp-c-divider)
+    --vp-card-border-color: var(--vp-c-divider)
+    --vp-card-bg: var(--vp-c-bg-elv)
+    --vp-card-hover-border-color: var(--vp-c-brand-1)
+    --vp-card-icon-size: 2rem
+    --vp-card-title-size: 1.1rem
+    --vp-card-desc-size: .9rem
+    --vp-footer-text-color: var(--vp-c-text-3)
+    --vp-footer-font-size: .875rem
+    --vp-card-hover: rgba(122, 173, 147, .08)
 
   *
     margin: 0
@@ -196,54 +287,38 @@ style:
     box-sizing: border-box
 
   .page
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif
-    background: var(--vp-c-bg)
+    font-family: var(--vp-font-family-base)
+    font-size: 16px
+    font-weight: 400
+    line-height: 24px
     color: var(--vp-c-text-1)
-    line-height: 1.7
-    overflow-x: hidden
+    background-color: var(--vp-c-bg)
+    font-synthesis: style
+    text-rendering: optimizeLegibility
+    -webkit-font-smoothing: antialiased
+    -moz-osx-font-smoothing: grayscale
     min-height: 100vh
+    overflow-x: hidden
     position: relative
-
-  .bg-gradient
-    position: fixed
-    top: 0
-    left: 0
-    width: 100vw
-    height: 100vh
-    z-index: -1
-    background: conic-gradient(from 0deg at 50% 50%,
-      #0a0a0c 0deg,
-      #111118 60deg,
-      #0d0d12 120deg,
-      #0a0a0c 180deg,
-      #101018 240deg,
-      #0b0b10 300deg,
-      #0a0a0c 360deg)
-    animation: rotate-gradient 20s linear infinite
-
-  @keyframes rotate-gradient
-    from
-      transform: rotate(0deg)
-    to
-      transform: rotate(360deg)
 
   a
     color: var(--vp-c-brand)
     text-decoration: none
     &:hover
-      color: var(--vp-c-brand-light)
+      color: var(--vp-c-brand-2)
 
+  // --- Navigation ---
   .nav
     position: sticky
     top: 0
-    z-index: 100
+    z-index: 30
     height: var(--vp-nav-height)
-    background: var(--vp-nav-bg)
-    backdrop-filter: blur(12px)
+    background-color: var(--vp-nav-bg)
     border-bottom: 1px solid var(--vp-c-divider)
+    backdrop-filter: blur(12px)
 
   .nav-inner
-    max-width: 1200px
+    max-width: var(--vp-layout-max-width)
     margin: 0 auto
     padding: 0 24px
     height: 100%
@@ -254,7 +329,7 @@ style:
   .nav-title
     font-size: 1.1rem
     font-weight: 700
-    color: var(--vp-c-text-1)
+    color: var(--vp-nav-title-color)
 
   .nav-links
     display: flex
@@ -262,30 +337,34 @@ style:
     align-items: center
 
   .nav-link
-    font-size: 0.9rem
+    font-size: .875rem
     font-weight: 500
-    color: var(--vp-c-text-2)
-    transition: color 0.2s
+    color: var(--vp-nav-link-color)
+    transition: color .2s
     cursor: pointer
     &:hover
-      color: var(--vp-c-text-1)
+      color: var(--vp-nav-link-hover-color)
 
+  // --- Hero ---
   .hero
-    max-width: 1200px
+    max-width: var(--vp-hero-max-width)
     margin: 0 auto
-    padding: 96px 24px 64px
+    padding: var(--vp-hero-padding-top) 24px 64px
     text-align: center
 
   .hero h1
-    font-size: 3.2rem
+    font-size: var(--vp-hero-heading-size)
     font-weight: 700
-    background: linear-gradient(135deg, var(--vp-c-brand) 0%, var(--vp-c-brand-light) 100%)
+    letter-spacing: -.02em
+    line-height: 1.2
+    background: linear-gradient(135deg, var(--vp-c-brand-1) 0%, var(--vp-c-brand-3) 100%)
     -webkit-background-clip: text
     -webkit-text-fill-color: transparent
     background-clip: text
+    margin-bottom: 16px
 
   .hero .tagline
-    font-size: 1.3rem
+    font-size: var(--vp-hero-tagline-size)
     font-weight: 500
     color: var(--vp-c-text-2)
     margin-top: 12px
@@ -294,141 +373,131 @@ style:
     max-width: 640px
     margin: 16px auto 32px
     color: var(--vp-c-text-2)
-    font-size: 1rem
+    font-size: var(--vp-hero-desc-size)
 
   .hero-actions
     display: flex
-    gap: 16px
+    gap: var(--vp-hero-actions-gap)
     justify-content: center
 
   .btn
     display: inline-block
-    padding: 10px 28px
+    padding: 8px 28px
     border-radius: 24px
-    font-size: 0.95rem
+    font-size: .875rem
     font-weight: 600
-    transition: background 0.2s, color 0.2s
+    transition: background-color .2s, color .2s
     cursor: pointer
-    border: none
+    border: 1px solid transparent
+    line-height: 24px
+    text-align: center
 
   .btn-brand
-    background: var(--vp-c-button-brand)
-    color: var(--vp-c-brand-text)
+    background-color: var(--vp-button-brand-bg)
+    color: var(--vp-button-brand-text)
     &:hover
-      background: var(--vp-c-button-brand-hover)
-      color: var(--vp-c-brand-text)
+      background-color: var(--vp-button-brand-hover-bg)
+      color: var(--vp-button-brand-hover-text)
 
   .btn-alt
-    background: var(--vp-c-button-alt)
-    color: var(--vp-c-button-alt-text)
+    background-color: var(--vp-button-alt-bg)
+    color: var(--vp-button-alt-text)
     &:hover
-      background: var(--vp-c-button-alt-hover)
+      background-color: var(--vp-button-alt-hover-bg)
 
+  // --- Features ---
   .features
-    max-width: 1200px
+    max-width: var(--vp-layout-max-width)
     margin: 0 auto
     padding: 0 24px 80px
     display: grid
     grid-template-columns: repeat(3, 1fr)
-    gap: 24px
+    gap: var(--vp-features-gap)
 
   .feature-card
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02))
-    border: 1px solid var(--vp-c-divider)
+    background-color: var(--vp-card-bg)
+    border: 1px solid var(--vp-card-border-color)
     border-radius: 12px
     padding: 28px 24px
-    transition: all 0.3s ease
+    transition: border-color .3s ease
     position: relative
     overflow: hidden
-    &::before
-      content: ''
-      position: absolute
-      top: 0
-      left: 0
-      width: 100%
-      height: 100%
-      background: radial-gradient(circle 150px at var(--mx, 50%) var(--my, 50%), var(--vp-card-hover, rgba(255,255,255,0.12)), transparent)
-      opacity: 0
-      transition: opacity 0.3s ease
     &:hover
-      border-color: var(--vp-c-brand)
-      &::before
-        opacity: 1
+      border-color: var(--vp-card-hover-border-color)
 
   .feature-card .icon
-    font-size: 2rem
+    font-size: var(--vp-card-icon-size)
     margin-bottom: 8px
+    display: inline-block
 
   .feature-card h3
-    font-size: 1.1rem
+    font-size: var(--vp-card-title-size)
     font-weight: 600
     color: var(--vp-c-text-1)
     margin-bottom: 6px
 
   .feature-card p
-    font-size: 0.9rem
+    font-size: var(--vp-card-desc-size)
     color: var(--vp-c-text-2)
     line-height: 1.6
 
+  // --- Docs ---
   .docs
-    max-width: 800px
+    max-width: var(--vp-docs-max-width)
     margin: 0 auto
     padding: 0 24px 80px
 
   .docs-section
-    margin-bottom: 48px
+    margin-bottom: var(--vp-docs-section-gap)
 
   .docs-section h2
-    font-size: 1.75rem
+    font-size: var(--vp-docs-heading-size)
     font-weight: 700
     color: var(--vp-c-text-1)
     margin-bottom: 16px
     padding-bottom: 8px
-    border-bottom: 1px solid var(--vp-c-divider)
+    border-bottom: 1px solid var(--vp-docs-border-color)
+    letter-spacing: -.01em
 
   .docs-section h3
-    font-size: 1.25rem
+    font-size: var(--vp-docs-subheading-size)
     font-weight: 600
     color: var(--vp-c-text-1)
     margin: 24px 0 8px
+    letter-spacing: -.01em
 
   .docs-section p
-    color: var(--vp-c-text-2)
+    color: var(--vp-docs-text-color)
     margin-bottom: 12px
 
   .docs-section ul
-    color: var(--vp-c-text-2)
+    color: var(--vp-docs-text-color)
     padding-left: 24px
     margin-bottom: 12px
 
   .docs-section ul li
     margin-bottom: 4px
-    code
-      background: var(--vp-code-bg)
-      color: var(--vp-code-text)
-      padding: 2px 6px
-      border-radius: 4px
-      font-size: 0.85em
-      font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace
 
+  // --- Inline code ---
   code
-    background: var(--vp-code-bg)
-    color: var(--vp-code-text)
+    background-color: var(--vp-code-bg)
+    color: var(--vp-code-color)
     padding: 2px 6px
-    border-radius: 4px
-    font-size: 0.85em
-    font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace
+    border-radius: 6px
+    font-size: var(--vp-code-font-size)
+    font-family: var(--vp-font-family-mono)
 
+  // --- Code blocks ---
   .code-block
-    background: var(--vp-code-block-bg)
-    color: var(--vp-code-block-text)
+    background-color: var(--vp-code-block-bg)
+    color: var(--vp-code-block-color)
     border-radius: 10px
     padding: 20px 24px
     margin: 16px 0
     overflow-x: auto
-    font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace
-    font-size: 0.85rem
-    line-height: 1.7
+    font-family: var(--vp-font-family-mono)
+    font-size: .85rem
+    line-height: var(--vp-code-line-height)
 
   .code-block code
     background: none
@@ -437,6 +506,7 @@ style:
     border-radius: 0
     font-size: inherit
 
+  // --- API table ---
   .api-table
     width: 100%
     border-collapse: collapse
@@ -445,33 +515,48 @@ style:
   .api-table th, .api-table td
     text-align: left
     padding: 8px 12px
-    border-bottom: 1px solid var(--vp-c-divider)
-    font-size: 0.9rem
+    border-bottom: 1px solid var(--vp-docs-border-color)
+    font-size: .875rem
 
   .api-table th
     color: var(--vp-c-text-1)
     font-weight: 600
-    background: var(--vp-c-bg-soft)
+    background-color: var(--vp-c-bg-soft)
 
   .api-table td
     color: var(--vp-c-text-2)
 
+  // --- Footer ---
   .footer
-    border-top: 1px solid var(--vp-c-divider)
+    border-top: 1px solid var(--vp-footer-border-color)
     padding: 24px
     text-align: center
-    color: var(--vp-footer-text)
-    font-size: 0.85rem
+    color: var(--vp-footer-text-color)
+    font-size: var(--vp-footer-font-size)
 
+  // --- Responsive ---
   @media (max-width: 768px)
+    .hero
+      padding-top: 64px
+
     .hero h1
       font-size: 2.2rem
+
     .hero .tagline
       font-size: 1.1rem
+
     .features
       grid-template-columns: 1fr
+
     .hero-actions
       flex-direction: column
       align-items: center
+
     .nav-links
       gap: 16px
+
+    .docs-section h2
+      font-size: 1.5rem
+
+    .docs-section h3
+      font-size: 1.1rem

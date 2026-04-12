@@ -4,9 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Luolita (萝莉塔)** is a Vue-like Single-File Component (SFC) generator. It parses `.luoli` files containing three section types (delimited by `coffee:`, `template:`, `style:` markers) and compiles them into standard JS, HTML, and CSS using CoffeeScript, Pug, and Stylus respectively.
+**Luolita (萝莉塔)** is a Vue-like Single-File Component (SFC) generator. It parses `.luoli` files containing three section types (delimited by `coffee:`, `template:` and `style:` markers) and compiles them into standard JS, HTML, and CSS using CoffeeScript, Pug, and a lightweight in-browser Stylus compiler respectively.
 
-Version: 0.1.3 | License: WTFPL
+Version: 0.1.4 | License: WTFPL
 
 ## Commands
 
@@ -38,10 +38,13 @@ Options:
 ### File Structure
 
 - `luolita.coffee` — CommonJS entry point / executable (main CLI)
+- `luolita.browser.coffee` — Browser SFC compiler entry (bundled with esbuild)
+- `luolita.stylus.coffee` — Lightweight in-browser Stylus-to-CSS compiler
+- `dist/bundle.cjs` — Browser bundle build script (esbuild + Node.js shim injection)
+- `dist/luolita.stylus.js` — Compiled Stylus compiler (used by browser bundle)
 - `README.md` — Also serves as ESM source via Literate CoffeeScript (compiled to `luolita.mjs`)
 - `package.json5` — Package manifest in JSON5 format (allows comments)
-- `temp/test.luoli` — Example input SFC file
-- `temp/test.{js,html,css}` — Compiled output files
+- `docs/` — Static site (GitHub Pages), example `.luoli` file and browser bundle
 
 ### How It Works
 
@@ -54,7 +57,7 @@ Options:
    - Compiles each section (only if present):
      - CoffeeScript → JS (with source maps via `coffeescript` package)
      - Pug → HTML (with bridged variables as locals via `pug` package)
-     - Stylus → CSS (via `stylus` package)
+     - Stylus → CSS (via `stylus` package on Node.js, or `luolita.stylus.coffee` in browser)
 5. Writes output to `<outputDir>/<name>.{js,html,css}`
 
 ### SFC Variable Bridge
@@ -66,6 +69,9 @@ The `sfc_var_bridge` function extracts simple variable assignments from the coff
 ### Key Design Notes
 
 - **CJS/ESM hybrid**: CoffeeScript doesn't fully support ESM, so the project uses CJS (`luolita.coffee`) as the primary entry and Literate CoffeeScript in README.md for ESM (`luolita.mjs`).
+- **In-browser Stylus**: `luolita.stylus.coffee` is a lightweight pure-browser Stylus-to-CSS compiler (no Node.js deps). Supports indentation-based nesting, variables, `&` parent reference, multi-selectors, and CSS custom properties.
+- **Browser bundle**: `dist/bundle.cjs` builds an IIFE bundle with Node.js module stubs (`fs`, `path`, `vm`, etc.) injected at build time.
+- **Auto-init**: Browser bundle auto-discovers `<link rel="luolita" href="...">` tags and renders them sequentially into the document body.
 - **Indentation handling**: A `dedent` function strips common leading whitespace from section content, allowing indented `.luoli` files.
 - **Missing sections are skipped**: If a `.luoli` file omits a section, that output is an empty string.
 - **JSON5**: Used for `package.json5` to allow comments in config.

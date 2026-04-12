@@ -34,8 +34,27 @@ pnpm exec coffee luolita.coffee --help
 
 在网页中直接加载 `.luoli` 文件并编译，零外部依赖，单个 `<script>` 标签即可使用：
 
+**自动渲染（推荐）**：使用 `<link rel="luolita">` 声明式加载，页面打开即渲染：
+
 ```html
-<!-- 引入打包好的 bundle，已内置 CoffeeScript / Pug / Stylus 运行时 -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My App</title>
+  <link rel="luolita" href="app.luoli">
+  <link rel="luolita" href="components.luoli">
+  <script src="luolita.browser.bundle.js"></script>
+</head>
+</html>
+```
+
+支持多个 `<link>` 标签，会按顺序依次渲染到页面中。
+
+**手动渲染**：通过 JS API 控制渲染时机和目标元素：
+
+```html
 <script src="luolita.browser.bundle.js"></script>
 
 <script>
@@ -98,17 +117,15 @@ Coffee 段中定义的变量（如 `title`、`message`、`count`）会自动桥�
 
 ## 更新内容 CHANGELOG.md
 
-### [0.1.4] - 2026-04-12
-- 浏览器 bundle：零依赖单文件，内置 CoffeeScript / Pug / Stylus 运行时
-- 实现 sfc_var_bridge：coffee 段变量自动桥接到 template 和 style
-- 实现 CLI 参数：-o/--output、-n/--name、-q/--quiet、-h/--help
-- 实现 dedent：自动去除 section 内容公共缩进
-- 添加错误处理：文件不存在、空 section、编译失败
-- 修复 await 在非 async 回调中的运行时错误
-- 修复 minimist 参数解析、Pug locals 传递等多个 bug
-- 创建 .gitignore、CHANGELOG.md、示例文件
-- 重构 package.json5 脚本，移除有问题的 preinstall/prepack
-- docs/ 类 Wiki 站点：VitePress 风格，展示 Node.js 和浏览器两种使用方式
+### [0.1.4] - 2026-04-13
+- 浏览器端 Stylus 编译器：纯浏览器实现的轻量级 Stylus-to-CSS 编译器（`luolita.stylus.coffee`）
+  - 支持缩进嵌套、变量、`&` 父选择器、多选择器、CSS 自定义属性
+  - 替代原 `stylus` npm 包（依赖 Node.js API，无法在浏览器运行）
+- 声明式 auto-init：自动发现 `<link rel="luolita" href="...">` 并按顺序渲染
+- Bundle 构建脚本：`dist/bundle.cjs`，esbuild 打包 + Node.js 内置模块 stub 注入
+- 更新 docs/ 站点：简化 index.html 为纯声明式模板
+- CSS 属性自动添加分号，确保浏览器正确解析
+- 修复 `compileStylus` 异步编译中的错误处理
 
 ### [0.0.x] - 2024-08-21
 - 新建文件夹 Create project
