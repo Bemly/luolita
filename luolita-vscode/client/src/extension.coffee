@@ -19,9 +19,14 @@ activate = (context) ->
   # Server module path (compiled JS output)
   serverModule = context.asAbsolutePath path.join 'out', 'server', 'server.js'
 
+  # Use fork mode with explicit module path - more reliable with pnpm than IPC
   serverOptions =
-    module: serverModule
-    transport: TransportKind.ipc
+    run:
+      module: serverModule
+      transport: TransportKind.fork
+    debug:
+      module: serverModule
+      transport: TransportKind.fork
 
   clientOptions =
     documentSelector: [{ scheme: 'file', language: 'luolita' }]

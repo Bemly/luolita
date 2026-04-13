@@ -12,7 +12,8 @@
 { getFoldingRanges } = require './folding'
 { getHover } = require './hover'
 { getCompletions } = require './completion'
-{ getSemanticTokens, LEGEND } = require './semantic-tokens'
+# Semantic tokens temporarily disabled: vscode-languageserver doesn't expose
+# onDocumentSemanticTokens directly. Use TextMate grammar for highlighting instead.
 
 connection = createConnection ProposedFeatures.all
 documents = new TextDocuments TextDocument
@@ -27,10 +28,6 @@ connection.onInitialize (params) ->
       completionProvider:
         resolveProvider: false
         triggerCharacters: ['=', '#', ':']
-      semanticTokensProvider:
-        legend: LEGEND
-        range: false
-        full: true
   }
 
 # Diagnostics on content change
@@ -62,12 +59,6 @@ connection.onCompletion (params) ->
   doc = documents.get params.textDocument.uri
   return [] unless doc
   getCompletions doc.uri, doc.getText(), params.position
-
-# Semantic tokens
-connection.onDocumentSemanticTokens (params) ->
-  doc = documents.get params.textDocument.uri
-  return { data: [] } unless doc
-  getSemanticTokens doc.uri, doc.getText()
 
 documents.listen connection
 connection.listen()
