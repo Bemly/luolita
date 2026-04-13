@@ -4,8 +4,24 @@
   "description": "Language server for .luoli Single-File Component files",
   "version": "0.1.0",
   "publisher": "bemly",
+  "icon": "icon.png",
+  "license": "SEE LICENSE IN LICENSE",
+  "homepage": "https://github.com/Bemly/luolita",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Bemly/luolita.git",
+    "directory": "luolita-vscode"
+  },
+  "bugs": {
+    "url": "https://github.com/Bemly/luolita/issues"
+  },
   "engines": { "vscode": "^1.85.0" },
   "categories": ["Programming Languages", "Linters"],
+  "keywords": ["luolita", "sfc", "single-file-component", "coffee", "pug", "stylus"],
+  "galleryBanner": {
+    "color": "#1e1e1e",
+    "theme": "dark"
+  },
   "activationEvents": ["onLanguage:luolita"],
   "main": "./out/client/extension.js",
   "contributes": {

@@ -1,0 +1,6 @@
+**/*.coffee
+**/*.map
+.vscode/
+.gitignore
+node_modules/.cache/
+pnpm-lock.yaml
