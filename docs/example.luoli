@@ -156,6 +156,10 @@ template:
         .code-block
           code!= coffeeSrc
         p 三个标记段均可选，省略某段则编译器输出空字符串。缩进自动检测，不限制具体空格数或 Tab。
+        p
+          | 推荐使用 VS Code 扩展
+          a(href="https://marketplace.visualstudio.com/items?itemName=bemly.luolita-vscode", target="_blank") Luolita Language Support
+          | ，支持实时诊断、代码折叠、悬停提示、自动补全等 IDE 功能。
 
       .docs-section
         h2 API 参考

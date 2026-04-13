@@ -156,6 +156,10 @@ template:
         .code-block
           code!= coffeeSrc
         p All three sections are optional. Omitting a section results in an empty output. Common leading indentation is automatically stripped.
+        p
+          | For the best experience, install the
+          a(href="https://marketplace.visualstudio.com/items?itemName=bemly.luolita-vscode", target="_blank") Luolita Language Support
+          | VS Code extension with real-time diagnostics, folding, hover, and auto-completion.
 
       .docs-section
         h2 API Reference

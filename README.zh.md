@@ -27,6 +27,19 @@ pnpm exec coffee luolita.coffee src/app.luoli -o dist -n app
 pnpm exec coffee luolita.coffee --help
 ```
 
+## 编辑器支持
+
+在 VS Code 中安装 **[Luolita Language Support](https://marketplace.visualstudio.com/items?itemName=bemly.luolita-vscode)** 扩展，获得完整的 IDE 体验：
+
+- 实时诊断（CoffeeScript / Pug / Stylus 编译错误，行号自动映射）
+- 文档大纲（section + 变量符号）
+- 代码折叠（按 `coffee:`、`template:`、`style:` 折叠）
+- 悬停提示（section 类型信息、变量值）
+- 自动补全（section marker 建议、模板插值变量名）
+- 语法高亮
+
+需要 Node.js >= 20 和 VS Code >= 1.85.0。
+
 ## 浏览器使用
 
 在网页中直接加载 `.luoli` 文件并编译，零外部依赖，单个 `<link>` 标签即可使用：

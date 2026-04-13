@@ -29,6 +29,19 @@ pnpm exec coffee luolita.coffee src/app.luoli -o dist -n app
 pnpm exec coffee luolita.coffee --help
 ```
 
+## Editor Support
+
+Install the **[Luolita Language Support](https://marketplace.visualstudio.com/items?itemName=bemly.luolita-vscode)** extension for full IDE experience in VS Code:
+
+- Real-time diagnostics (CoffeeScript / Pug / Stylus compilation errors with correct line numbers)
+- Document symbols (sections + variables) in Outline view
+- Code folding by section (`coffee:`, `template:`, `style:`)
+- Hover information (section type, variable values)
+- Auto-completion (section markers, variable names in template interpolations)
+- Syntax highlighting
+
+Requires Node.js >= 20 and VS Code >= 1.85.0.
+
 ## Browser Usage
 
 Load `.luoli` files directly in the browser with zero external dependencies:
