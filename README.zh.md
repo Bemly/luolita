@@ -40,6 +40,8 @@ pnpm exec coffee luolita.coffee --help
 
 需要 Node.js >= 20 和 VS Code >= 1.85.0。
 
+<img src="docs/2.png" width="600"/><img src="docs/1.png" width="400"/>
+
 ## 浏览器使用
 
 在网页中直接加载 `.luoli` 文件并编译，零外部依赖，单个 `<link>` 标签即可使用：
