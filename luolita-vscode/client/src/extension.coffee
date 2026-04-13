@@ -10,6 +10,12 @@ path = require 'path'
 client = null
 
 activate = (context) ->
+  # Force .luoli files to use the luolita language mode
+  config = workspace.getConfiguration 'files'
+  assoc = config.get('associations', {})
+  if not assoc['*.luoli']
+    config.update 'associations', Object.assign({}, assoc, { '*.luoli': 'luolita' }), false
+
   # Server module path (compiled JS output)
   serverModule = context.asAbsolutePath path.join 'out', 'server', 'server.js'
 

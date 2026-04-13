@@ -14,7 +14,8 @@
         "id": "luolita",
         "extensions": [".luoli"],
         "aliases": ["Luolita"],
-        "configuration": "./language-configuration.json"
+        "configuration": "./language-configuration.json",
+        "firstLine": "^(coffee|template|style):"
       }
     ],
     "grammars": [
