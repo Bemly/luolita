@@ -1,9 +1,0 @@
-{
-  "name": "luolita-language-client",
-  "version": "0.1.0",
-  "main": "./out/client/extension.js",
-  "engines": { "node": ">=20.0.0" },
-  "dependencies": {
-    "vscode-languageclient": "^9.0.1"
-  }
-}

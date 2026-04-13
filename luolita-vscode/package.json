@@ -57,10 +57,14 @@
     "watch": "npm run watch:client & npm run watch:server"
   },
   "dependencies": {
-    "vscode-languageclient": "^9.0.1"
+    "coffeescript": "^2.7.0",
+    "pug": "^3.0.3",
+    "stylus": "^0.63.0",
+    "vscode-languageclient": "^9.0.1",
+    "vscode-languageserver": "^9.0.1",
+    "vscode-languageserver-textdocument": "^1.0.11"
   },
   "devDependencies": {
-    "@types/vscode": "^1.85.0",
-    "coffeescript": "^2.7.0"
+    "@types/vscode": "^1.85.0"
   }
 }
