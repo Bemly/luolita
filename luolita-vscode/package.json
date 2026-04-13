@@ -1,0 +1,66 @@
+{
+  "name": "luolita-vscode",
+  "displayName": "Luolita Language Support",
+  "description": "Language server for .luoli Single-File Component files",
+  "version": "0.1.0",
+  "publisher": "bemly",
+  "engines": { "vscode": "^1.85.0" },
+  "categories": ["Programming Languages", "Linters"],
+  "activationEvents": ["onLanguage:luolita"],
+  "main": "./out/client/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "luolita",
+        "extensions": [".luoli"],
+        "aliases": ["Luolita"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "luolita",
+        "scopeName": "source.luoli",
+        "path": "./syntaxes/luolita.tmLanguage.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "luolita.compile",
+        "title": "Luolita: Compile Current File",
+        "category": "Luolita"
+      }
+    ],
+    "configuration": {
+      "title": "Luolita",
+      "properties": {
+        "luolita.trace.server": {
+          "type": "string",
+          "enum": ["off", "messages", "verbose"],
+          "default": "off",
+          "description": "Traces communication between VS Code and the Luolita language server"
+        },
+        "luolita.outputDir": {
+          "type": "string",
+          "default": "temp",
+          "description": "Default output directory for compiled files"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build:client": "coffee -c -b -o out/client client/src",
+    "build:server": "coffee -c -b -o out/server server/src",
+    "build": "npm run build:client && npm run build:server",
+    "watch:client": "coffee -cwb -o out/client client/src",
+    "watch:server": "coffee -cwb -o out/server server/src",
+    "watch": "npm run watch:client & npm run watch:server"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "coffeescript": "^2.7.0"
+  }
+}

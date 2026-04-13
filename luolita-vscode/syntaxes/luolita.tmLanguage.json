@@ -1,0 +1,59 @@
+{
+  "name": "Luolita",
+  "scopeName": "source.luoli",
+  "patterns": [
+    {
+      "match": "^(coffee|template|style):\\s*$",
+      "name": "keyword.control.section.luoli"
+    },
+    {
+      "begin": "^(coffee:)\\s*$",
+      "beginCaptures": {
+        "1": { "name": "keyword.control.section.luoli" }
+      },
+      "end": "^(template|style|coffee):\\s*$",
+      "endCaptures": {
+        "1": { "name": "keyword.control.section.luoli" }
+      },
+      "name": "meta.section.coffee.luoli",
+      "contentName": "source.coffee.embedded.luoli",
+      "patterns": [
+        {
+          "match": "#.*$",
+          "name": "comment.line.number-sign.coffee"
+        }
+      ]
+    },
+    {
+      "begin": "^(template:)\\s*$",
+      "beginCaptures": {
+        "1": { "name": "keyword.control.section.luoli" }
+      },
+      "end": "^(coffee|style|template):\\s*$",
+      "endCaptures": {
+        "1": { "name": "keyword.control.section.luoli" }
+      },
+      "name": "meta.section.template.luoli",
+      "contentName": "text.pug.embedded.luoli",
+      "patterns": []
+    },
+    {
+      "begin": "^(style:)\\s*$",
+      "beginCaptures": {
+        "1": { "name": "keyword.control.section.luoli" }
+      },
+      "end": "^(coffee|template|style):\\s*$",
+      "endCaptures": {
+        "1": { "name": "keyword.control.section.luoli" }
+      },
+      "name": "meta.section.style.luoli",
+      "contentName": "source.stylus.embedded.luoli",
+      "patterns": [
+        {
+          "match": "//.*$",
+          "name": "comment.line.double-slash.stylus"
+        }
+      ]
+    }
+  ]
+}
