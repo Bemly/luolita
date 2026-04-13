@@ -42,6 +42,8 @@ Install the **[Luolita Language Support](https://marketplace.visualstudio.com/it
 
 Requires Node.js >= 20 and VS Code >= 1.85.0.
 
+<img src="docs/2.png" width="600"/><img src="docs/1.png" width="400"/>
+
 ## Browser Usage
 
 Load `.luoli` files directly in the browser with zero external dependencies:
