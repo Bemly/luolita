@@ -111,21 +111,167 @@ dedent = (text) ->
 
 # Bridge variables between SFC sections
 # Extracts variables defined in the coffee section and makes them
-# available as locals for pug template and as $-prefixed variables in stylus
+# available as locals for pug template and as $-prefixed variables in stylus.
+# Values may span lines (arrays/objects/implicit objects), use single quotes
+# or bare keys — anything CoffeeScript accepts. Evaluation runs in a sandbox
+# (stub window/document/console); groups that throw fall back to direct
+# cfs.eval of the value text, then to the raw string, so one bad apple never
+# spoils the rest.
+bridge_stub_names = ['window', 'document', 'console', 'localStorage', 'navigator', 'fetch']
+bridge_stub_values = ->
+  silent = log: (->), error: (->), warn: (->), info: (->), debug: (->)
+  [{}, {}, silent, {}, {}, (-> Promise.reject new Error 'fetch not available in bridge')]
+
+bridge_indent_width = (line) ->
+  m = line.match /^(\s*)/
+  if m then m[1].length else 0
+
+bridge_cont_re = /[=,:\[({+\-*\/\%&|?]\s*$|->\s*$|=>\s*$/
+
+bridge_bracket_depth = (text) ->
+  depth = 0
+  in_str = null
+  i = 0
+  while i < text.length
+    ch = text[i]
+    if in_str
+      if ch is '\\'
+        i += 2
+        continue
+      if ch is in_str
+        in_str = null
+    else if ch is '"' or ch is "'" or ch is '`'
+      in_str = ch
+    else if ch is '#' and text[i+1] isnt '{'
+      while i < text.length and text[i] isnt '\n'
+        i += 1
+      continue
+    else if ch is '[' or ch is '{' or ch is '('
+      depth += 1
+    else if ch is ']' or ch is '}' or ch is ')'
+      depth -= 1
+    i += 1
+  depth
+
+# Pull out triple-quoted assignments first with legacy raw semantics
+# (no #{} interpolation); blank the region so grouping skips it.
+bridge_extract_triples = (lines) ->
+  triples = {}
+  code = []
+  i = 0
+  while i < lines.length
+    line = lines[i]
+    qi = line.indexOf "'''"
+    qd = line.indexOf '"""'
+    q = null
+    if qi isnt -1 and (qd is -1 or qi < qd)
+      q = "'''"
+    else if qd isnt -1
+      q = '"""'
+    unless q
+      code.push line
+      i += 1
+      continue
+    am = line.match ///^([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=\s*#{q}(.*)$///
+    occ = line.split(q).length - 1
+    if occ >= 2
+      if am
+        triples[am[1]] = line.split(q)[1]
+      i += 1
+      continue
+    if am
+      acc = []
+      if am[2].trim()
+        acc.push am[2]
+      i += 1
+      while i < lines.length and lines[i].indexOf(q) is -1
+        acc.push lines[i]
+        i += 1
+      if i < lines.length
+        before = lines[i].split(q)[0]
+        if before.trim()
+          acc.push before
+        i += 1
+      triples[am[1]] = dedent acc.join '\n'
+    else
+      i += 1
+      while i < lines.length and lines[i].indexOf(q) is -1
+        i += 1
+      if i < lines.length
+        i += 1
+    continue
+  {triples, code}
+
+# Collect top-level `name = value` groups, joining continuation lines.
+# A group starting with an empty value (`cfg =` alone) consumes the whole
+# following indented block (implicit object / indented expression).
+bridge_collect_groups = (lines) ->
+  groups = []
+  i = 0
+  while i < lines.length
+    line = lines[i]
+    m = line.match /^([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=\s*(?![=>])(.*)$/
+    unless m
+      i += 1
+      continue
+    buf = [line]
+    vals = [m[2]]
+    j = i + 1
+    block_form = m[2].trim() is ''
+    loop
+      depth = bridge_bracket_depth buf.join '\n'
+      if depth > 0
+        break if j >= lines.length
+        buf.push lines[j]
+        vals.push lines[j]
+        j += 1
+        continue
+      if block_form
+        break if j >= lines.length or bridge_indent_width(lines[j]) is 0
+        buf.push lines[j]
+        vals.push lines[j]
+        j += 1
+        continue
+      last = buf[buf.length - 1].replace /\s+$/, ''
+      if bridge_cont_re.test(last) and j < lines.length and bridge_indent_width(lines[j]) > 0
+        buf.push lines[j]
+        vals.push lines[j]
+        j += 1
+        continue
+      break
+    groups.push name: m[1], code: buf.join('\n'), value: vals.join('\n')
+    i = j
+  groups
+
+bridge_eval_groups = (groups) ->
+  ok = {}
+  scope = ''
+  for g in groups
+    trial = if scope then scope + '\n' + g.code else g.code
+    try
+      js = cfs.compile trial, bare: true, header: false
+      fn = new Function bridge_stub_names.join(','), js + '\nreturn ' + g.name + ';'
+      ok[g.name] = fn.apply null, bridge_stub_values()
+      scope = trial
+    catch
+      continue
+  ok
+
 sfc_var_bridge = (coffee_src) ->
-  vars = {}
-  lines = coffee_src.split '\n'
-  for line in lines
-    # Match simple top-level variable assignments (allowing leading whitespace)
-    match = line.match /^\s*([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=\s*(.+)$/
-    if match
+  {triples, code} = bridge_extract_triples coffee_src.split '\n'
+  vars = triples
+  groups = bridge_collect_groups code
+  ok = bridge_eval_groups groups
+  for g in groups
+    if g.name of ok
+      vars[g.name] = ok[g.name]
+    else if g.value.trim() is ''
+      continue
+    else
       try
-        # Evaluate the value as CoffeeScript to get the actual value
-        result = cfs.eval match[2], bare: true
-        vars[match[1]] = result
+        vars[g.name] = cfs.eval g.value, bare: true
       catch
-        # Skip expressions that can't be evaluated statically
-        vars[match[1]] = match[2].trim()
+        vars[g.name] = g.value.trim()
   vars
 
 output2file = (json, dir, name) ->

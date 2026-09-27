@@ -1,5 +1,13 @@
 # Changelog
 
+### [0.1.5] - 2026-09-27
+- Bridge fix (browser + CLI): top-level coffee values may now span lines
+  (arrays/objects/implicit objects), use single quotes or bare keys — anything
+  the real CoffeeScript compiler accepts. Evaluation runs sandboxed; failures
+  fall back per-group to legacy handling. Triple-quoted blocks keep raw
+  (non-interpolated) semantics. Bare identifiers keep old meaning via a
+  plain-data gate (e.g. `title = Luolita` stays the string "Luolita").
+
 ### [0.1.3] - 2024-08-22
 - 简单分割文件为三段类型分开解释 Simple split files into three types to explain
 
